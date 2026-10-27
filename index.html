@@ -1,0 +1,551 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>THE ECHO Awards</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Unbounded:wght@500;700;800&display=swap">
+<style>
+/* Layout: dark violet stage, orange echo rings from the hero outward; award groups, then a 3-step vote, then a message wall. */
+:root{
+  --bg:#150d33; --surface:#201449; --surface-2:#2a1b5e; --line:#3d2b82;
+  --fg:#f6f1ff; --muted:#b9acd9; --orange:#ff7a1a; --orange-ink:#1b0a00; --violet:#8b5cf6;
+  --ring:rgba(255,122,26,.35);
+  --grad:linear-gradient(120deg,#8b5cf6 0%,#d9548f 55%,#ff7a1a 100%);
+  --display:'Unbounded','Be Vietnam Pro',system-ui,sans-serif;
+  --body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f5f1fc; --surface:#ffffff; --surface-2:#ece5fa; --line:#d4c7f0;
+    --fg:#1d1240; --muted:#5d4f8a; --orange:#e8620a; --orange-ink:#ffffff; --violet:#6d3fe0;
+    --ring:rgba(232,98,10,.3);
+    --grad:linear-gradient(120deg,#6d3fe0 0%,#c23d82 55%,#e8620a 100%);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f5f1fc; --surface:#ffffff; --surface-2:#ece5fa; --line:#d4c7f0;
+  --fg:#1d1240; --muted:#5d4f8a; --orange:#e8620a; --orange-ink:#ffffff; --violet:#6d3fe0;
+  --ring:rgba(232,98,10,.3);
+  --grad:linear-gradient(120deg,#6d3fe0 0%,#c23d82 55%,#e8620a 100%);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-weight:600}
+.mock-note{background:var(--surface-2);color:var(--muted);font-size:13px;text-align:center;padding:8px 16px}
+
+/* nav */
+header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.logo{font-family:var(--display);font-weight:800;letter-spacing:.04em;font-size:15px;text-decoration:none}
+.logo span{color:var(--orange)}
+.nav nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav nav a{font-size:14px;text-decoration:none;padding:6px 12px;border-radius:99px;color:var(--muted)}
+.nav nav a:hover{color:var(--fg);background:var(--surface)}
+.nav .cta{background:var(--orange);color:var(--orange-ink);font-weight:600}
+.nav .cta:hover{background:var(--orange);color:var(--orange-ink);filter:brightness(1.08)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding-block:72px 56px;text-align:left}
+.rings{position:absolute;right:-140px;top:50%;width:620px;height:620px;transform:translateY(-50%);pointer-events:none}
+.rings i{position:absolute;inset:0;border:2px solid var(--ring);border-radius:50%;animation:ping 6s linear infinite}
+.rings i:nth-child(2){animation-delay:-2s}.rings i:nth-child(3){animation-delay:-4s}
+@keyframes ping{0%{transform:scale(.25);opacity:1}100%{transform:scale(1);opacity:0}}
+.hero .wrap{position:relative}
+.hero h1{font-size:clamp(44px,10vw,112px);font-weight:800;letter-spacing:-.02em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.08em}
+.tagline{font-family:var(--display);font-weight:500;font-size:clamp(16px,2.6vw,24px);margin-top:12px}
+.lead{max-width:56ch;color:var(--muted);margin-top:20px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:12px;padding:13px 22px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--orange);color:var(--orange-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--surface)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.wave{display:flex;align-items:center;gap:4px;height:64px;margin-top:40px}
+.wave b{flex:1;max-width:10px;min-width:3px;border-radius:99px;background:var(--grad);height:var(--h);animation:eq 1.6s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes eq{50%{transform:scaleY(.35)}}
+.timeline{display:flex;gap:0;margin-top:36px;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
+.timeline div{flex:1 1 180px;padding:16px 20px;border-right:1px solid var(--line)}
+.timeline div:last-child{border-right:0}
+.timeline strong{display:block;font-family:var(--display);font-size:20px}
+.timeline span{font-size:13px;color:var(--muted)}
+.timeline .on strong{color:var(--orange)}
+
+/* sections */
+section{padding-block:64px}
+.sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;max-width:62ch}
+.sec-head h2{font-size:clamp(26px,4.4vw,40px)}
+.sec-head p{color:var(--muted)}
+
+/* awards */
+.award-groups{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.group{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--orange);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.group.cm{border-top-color:var(--violet)}
+.group .zone{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--orange)}
+.group.cm .zone{color:var(--violet)}
+.group h3{font-size:18px}
+.group h3 small{display:block;font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted);margin-top:4px}
+.award{display:flex;gap:14px;align-items:flex-start;padding-top:14px;border-top:1px solid var(--line)}
+.award:first-of-type{border-top:0;padding-top:0}
+.award .ico{flex:none;width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;color:#fff}
+.award .ico svg{width:22px;height:22px}
+.award b{font-family:var(--display);font-size:15px;font-weight:700;display:block}
+.award p{font-size:14px;color:var(--muted);margin-top:2px}
+.award .vi{font-size:13px;color:var(--orange);font-weight:500}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--muted);margin-left:6px;vertical-align:middle}
+
+/* vote */
+#vote{background:var(--surface);border-block:1px solid var(--line)}
+.steps{display:flex;flex-direction:column;gap:40px}
+.step-h{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.step-h .n{flex:none;width:36px;height:36px;border-radius:50%;background:var(--orange);color:var(--orange-ink);display:grid;place-items:center;font-family:var(--display);font-weight:700}
+.step-h h3{font-size:18px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.chip{font:inherit;text-align:left;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;min-width:0}
+.chip b{display:block;font-family:var(--display);font-size:13px}
+.chip span{font-size:12px;color:var(--muted)}
+.chip:hover{border-color:var(--violet)}
+.chip[aria-pressed="true"]{border-color:var(--orange);background:var(--surface-2);box-shadow:0 0 0 2px var(--ring)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:20px}
+.tab{font:inherit;font-size:14px;white-space:nowrap;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:99px;padding:8px 16px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.person{color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:16px;padding:16px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}
+.person:hover{border-color:var(--violet)}
+.person .avatar{margin-bottom:6px}
+.vote-btn{margin-top:auto;width:100%;font:inherit;font-weight:600;font-size:14px;border:0;border-radius:10px;padding:10px 12px;cursor:pointer;background:var(--orange);color:var(--orange-ink)}
+.person .info{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
+.vote-btn:hover{filter:brightness(1.08)}
+.vote-btn.voted{background:var(--surface-2);color:var(--muted);cursor:default;filter:none;border:1px solid var(--line)}
+.backdrop{position:fixed;inset:0;z-index:55;background:rgba(10,5,30,.65)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;max-height:90vh;overflow-y:auto;background:var(--surface);border-top:3px solid var(--orange);border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.35);padding:22px max(16px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px))}
+.sheet>.step-h,.sheet>.msg-box{max-width:720px;margin-left:auto;margin-right:auto;width:100%}
+.sheet .close{position:absolute;top:10px;right:max(12px,env(safe-area-inset-right,0px));width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-size:22px;line-height:1;cursor:pointer}
+.sheet .close:hover{background:var(--surface-2)}
+.avatar{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:24px;color:#fff;background:var(--a);position:relative;border:2px dashed rgba(255,255,255,.55)}
+.avatar small{position:absolute;bottom:-6px;font-family:var(--body);font-size:10px;font-weight:600;background:var(--bg);color:var(--muted);padding:0 6px;border-radius:99px;border:1px solid var(--line)}
+.person .name{font-weight:600;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+.person .role{font-size:12px;color:var(--muted)}
+.empty{grid-column:1/-1;padding:28px;border:1.5px dashed var(--line);border-radius:16px;color:var(--muted);text-align:center}
+.hint{font-size:13px;color:var(--muted);margin-bottom:14px}
+.msg-box{display:flex;flex-direction:column;gap:10px}
+.picked{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.picked strong{color:var(--fg)}
+textarea{font:inherit;width:100%;min-height:120px;resize:vertical;padding:14px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg)}
+textarea::placeholder{color:var(--muted)}
+.count{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.count .bad{color:var(--orange);font-weight:600}
+.submit-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.done{display:none;padding:18px 20px;border-radius:14px;background:var(--surface-2);border:1px solid var(--orange)}
+.done.show{display:block}
+
+/* composer */
+.composer{background:var(--surface);border:2px solid var(--orange);border-radius:24px;padding:clamp(20px,4vw,36px);display:flex;flex-direction:column;gap:14px;box-shadow:0 0 0 6px var(--ring)}
+.c-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.big-label{font-size:13px;font-weight:600;color:var(--muted)}
+.big-label{font-family:var(--display);font-size:18px;color:var(--fg);margin-top:6px}
+select{font:inherit;width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg)}
+.c-who{display:flex;align-items:center;gap:14px;min-height:64px;padding:10px 14px;border-radius:14px;background:var(--surface-2)}
+.c-who .avatar{width:48px;height:48px;font-size:16px;flex:none}
+.c-who .avatar small{display:none}
+.c-who b{display:block}
+.c-who span{font-size:13px;color:var(--muted)}
+.composer textarea{min-height:220px;font-size:18px;line-height:1.55;padding:18px}
+.btn.big{padding:16px 32px;font-size:17px}
+@media (max-width:700px){.c-row{grid-template-columns:1fr}}
+
+/* wall */
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.note:nth-child(3n+1){border-top:4px solid var(--orange)}
+.note:nth-child(3n+2){border-top:4px solid var(--violet)}
+.note:nth-child(3n){border-top:4px solid #d9548f}
+.note q{quotes:none;font-size:15px}
+.note footer{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.pill{background:var(--surface-2);padding:2px 10px;border-radius:99px;font-weight:600;color:var(--fg)}
+.wall-cta{margin-top:24px}
+
+footer.site{border-top:1px solid var(--line);padding-block:32px;color:var(--muted);font-size:14px}
+footer.site .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:820px){
+  .award-groups{grid-template-columns:1fr}
+  .nav nav a:not(.cta){display:none}
+  .rings{right:-300px;opacity:.7}
+  .timeline div{border-right:0;border-bottom:1px solid var(--line)}
+  .timeline div:last-child{border-bottom:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .rings i,.wave b{animation:none}
+  .rings i:nth-child(1){transform:scale(1)}
+  .rings i:nth-child(2){transform:scale(.7)}
+  .rings i:nth-child(3){transform:scale(.4)}
+}
+</style>
+
+<div class="mock-note">Bản minh họa bố cục. Ảnh đại diện đang là ô giữ chỗ, các lời nhắn bên dưới là ví dụ.</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top">THE <span>ECHO</span></a>
+    <nav aria-label="Điều hướng">
+      <a href="#giai-thuong">Giải thưởng</a>
+      <a href="#loi-nhan">Lời nhắn</a>
+      <a class="cta" href="#vote">Bình chọn ngay</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" style="padding-bottom:56px">
+    <div class="rings" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="wrap">
+      <p class="eyebrow">Tháng tri ân 20/11 · Hệ thống Anh ngữ A&amp;U</p>
+      <h1>THE ECHO</h1>
+      <p class="tagline">Every Lesson Leaves an Echo</p>
+      <p class="lead">Mỗi buổi học đều để lại một tiếng vọng. Hãy gửi lời cảm ơn đến thầy cô và các Class Manager đã đồng hành cùng bạn, bằng một lá phiếu và vài câu chuyện thật.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#vote">Bình chọn ngay</a>
+        <a class="btn ghost" href="#giai-thuong">Xem các giải thưởng</a>
+      </div>
+      <div class="wave" id="wave" aria-hidden="true"></div>
+      <div class="timeline" role="list">
+        <div class="on" role="listitem"><strong>28/10</strong><span>Mở bình chọn</span></div>
+        <div role="listitem"><strong>18/11</strong><span>Đóng bình chọn</span></div>
+        <div role="listitem"><strong>20/11</strong><span>Ngày tri ân nhà giáo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="giai-thuong">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Echo Awards</p>
+        <h2>Tổng quan các đề cử giải thưởng</h2>
+        <p>Hai khu đề cử riêng cho Giáo viên và Class Manager. Mỗi giải ghi nhận một kiểu tiếng vọng khác nhau mà thầy cô và CM để lại trong hành trình học của bạn.</p>
+      </div>
+      <div class="award-groups" id="award-groups"></div>
+    </div>
+  </section>
+
+  <section id="vote">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Bình chọn · 28/10 – 18/11/2026</p>
+        <h2>Ba bước để gửi một tiếng vọng</h2>
+        <p>Mỗi lượt bình chọn gồm một hạng mục, một người được đề cử và một Echo Message.</p>
+      </div>
+      <div class="steps">
+        <div>
+          <div class="step-h"><span class="n">1</span><h3>Chọn hạng mục giải thưởng</h3></div>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div>
+          <div class="step-h"><span class="n">2</span><h3>Chọn người bạn muốn bình chọn</h3></div>
+          <p class="hint" id="pool-hint">Chọn một hạng mục ở bước 1 để xem danh sách đề cử.</p>
+          <div class="tabs" id="tabs" role="tablist" aria-label="Cơ sở"></div>
+          <div class="cards" id="cards"></div>
+        </div>
+        <div class="backdrop" id="backdrop" hidden></div>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+          <button type="button" class="close" id="sheet-close" aria-label="Đóng">×</button>
+          <div class="step-h"><span class="n">3</span><h3 id="sheet-title">Viết Echo Message</h3></div>
+          <div class="msg-box">
+            <div class="picked" id="picked">Bạn đang bình chọn cho: <strong>chưa chọn</strong></div>
+            <label for="msg" class="hint" style="margin:0">Từ 1 đến 3 câu, kể câu chuyện thật hoặc lý do người này xứng đáng.</label>
+            <textarea id="msg" placeholder="Ví dụ: Cô luôn nhắn hỏi thăm mỗi khi em vắng buổi học, và nhờ đó em đã không bỏ cuộc."></textarea>
+            <div class="count"><span id="sent-count">0 câu</span><span id="len-count">0 / 400 ký tự</span></div>
+            <div class="submit-row">
+              <button class="btn primary" id="submit" disabled>Gửi bình chọn</button>
+              <span class="hint" id="submit-hint" style="margin:0">Hoàn thành cả 3 bước để gửi.</span>
+            </div>
+            <div class="done" id="done" role="status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="loi-nhan">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Echo Message</p>
+        <h2>Gửi lời nhắn đến Giáo viên và CM của bạn</h2>
+        <p>Một câu chuyện thật, một lời cảm ơn nhỏ cũng đủ để tạo nên tiếng vọng. Hãy chọn người nhận rồi viết vài câu.</p>
+      </div>
+
+      <form class="composer" id="composer" novalidate>
+        <div class="c-row">
+          <div class="field">
+            <label for="c-kind">Bạn muốn gửi cho</label>
+            <select id="c-kind"><option value="gv">Giáo viên</option><option value="cm">Class Manager (CM)</option></select>
+          </div>
+          <div class="field">
+            <label for="c-campus">Cơ sở</label>
+            <select id="c-campus"></select>
+          </div>
+          <div class="field">
+            <label for="c-person">Họ và tên</label>
+            <select id="c-person"></select>
+          </div>
+        </div>
+        <div class="c-who" id="c-who" aria-live="polite"></div>
+        <label for="c-msg" class="big-label">Echo Message của bạn</label>
+        <textarea id="c-msg" placeholder="Viết 1 đến 3 câu. Hãy kể câu chuyện thật hoặc lý do người này xứng đáng nhận lời cảm ơn."></textarea>
+        <div class="count"><span id="c-sent">0 câu</span><span id="c-len">0 / 400 ký tự</span></div>
+        <div class="submit-row">
+          <button class="btn primary big" id="c-submit" type="submit" disabled>Gửi Echo Message</button>
+          <span class="hint" id="c-hint" style="margin:0">Viết ít nhất 1 câu để gửi.</span>
+        </div>
+        <div class="done" id="c-done" role="status"></div>
+      </form>
+
+      <div class="sec-head" style="margin-top:56px;margin-bottom:20px">
+        <h3 style="font-size:20px">Lời nhắn mẫu để bạn tham khảo</h3>
+        <p>Các Echo Message được chọn lọc sẽ hiện trên bức tường này trong suốt tháng tri ân.</p>
+      </div>
+      <div class="wall" id="wall"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>THE ECHO · Hệ thống Anh ngữ A&amp;U</span>
+    <span>Every Lesson Leaves an Echo</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var campuses=[
+    {id:'qt',name:'Quang Trung',gv:['Nguyễn Thị Mỹ Hạnh','Nguyễn Thị Nguyệt','Trần Minh Thu','Nguyễn Trang Uyên','Trần Thị Minh Hà','Lê Khắc Quý','Bùi Khánh Linh','Hoàng Đức Linh','Mai Huy'],cm:['Lê Huyền Trang','Hoàng Thị Tuyết Chinh']},
+    {id:'pk',name:'Phùng Khoang',gv:['Trịnh Hoàng Mi','Trần Ngọc Nam','Nguyễn Đức Thịnh An','Phùng Thị Như Quỳnh','Nguyễn Hải Nam','Trần Tuấn Hải','Bùi Thị Như Quỳnh'],cm:['Nguyễn Ngọc Chi','Phạm Hương Giang']},
+    {id:'mk',name:'Minh Khai + Hòa Lạc',gv:['Vũ Quỳnh Anh','Nguyễn Doãn Quốc Anh','Nguyễn Tuấn Nghĩa','Đào Quế Anh','Vũ Hùng Dương'],cm:['Nguyễn Thu Khương Anh','Lương Thị Kim Oanh']},
+    {id:'ptd',name:'Phạm Thận Duật',gv:['Bùi Thuý Nga','Hoàng Tiến Minh','Hà Phương Ngân','Nguyễn Thuỷ Tiên','Nguyễn Anh Đức','Trần Nhật Tài','Nguyễn Thị Khánh Linh','Cô Minh Phương','Cô Vũ Thị Ngân','Cô Trương Ánh Ngọc'],cm:['Phạm Minh Hương','Trần Thị Kim Huệ','Trần Yến Nhi','Ngô Văn Linh']},
+    {id:'hn',name:'Hoàng Ngân',gv:['Nguyễn Nhật Long','Nguyễn Tuấn Anh','Lê Tú Anh','Nguyễn Thị Phương Loan'],cm:['Lê Phú An']},
+    {id:'btl',name:'Bắc Từ Liêm',gv:[],cm:['Ngô Thị Hằng Nga']}
+  ];
+  var awards=[
+    {id:'inspiring',name:'Inspiring Echo',vi:'',pool:'gv',group:'gv',desc:'Giáo viên truyền cảm hứng nhất, tạo động lực và mang lại năng lượng tích cực.'},
+    {id:'golden',name:'Golden Mentor Echo',vi:'',pool:'gv',group:'gv',desc:'Giáo viên tận tâm, luôn đồng hành và theo sát sự tiến bộ của từng học viên.'},
+    {id:'energy',name:'Energy Echo',vi:'',pool:'gv',group:'gv',desc:'Giáo viên có lớp học sôi nổi, nhiều năng lượng và hoạt động thú vị.'},
+    {id:'rising',name:'Rising Echo',vi:'',pool:'gv',group:'gv',desc:'Giáo viên mới (dưới 1 năm làm việc) tạo được dấu ấn xuất sắc.'},
+    {id:'backstage',name:'Backstage Echo',vi:'',pool:'cm',group:'cm',desc:'Dành cho CM, những người đứng sau hỗ trợ lớp học vận hành trôi chảy.'},
+    {id:'silent',name:'Silent Echo',vi:'Tiếng Vọng Âm Thầm',pool:'cm',group:'cm',desc:'CM cống hiến bền bỉ, âm thầm phía sau bục giảng. Mỗi hành động chăm sóc, nhắc nhở và hỗ trợ tạo ra niềm tin và sự an tâm cho cả học viên lẫn giáo viên.'},
+    {id:'connecting',name:'Connecting Echo',vi:'Tiếng Vọng Kết Nối',pool:'cm',group:'cm',desc:'CM kết nối tuyệt vời giữa Học viên, Giáo viên, Phụ huynh và Trung tâm, để thông tin và sự thấu hiểu được lan tỏa thông suốt.'},
+    {id:'endless',name:'Endless Echo',vi:'Tiếng Vọng Bền Bỉ · Sự Đồng Hành Không Ngừng',pool:'cm',group:'cm',desc:'CM kiên trì, sát sao đến cùng với từng học viên, kéo các bạn trở lại với việc học khi nản chí.'}
+  ];
+  var icons={
+    gv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M7 11.5V16c0 1.2 2.2 2.5 5 2.5s5-1.3 5-2.5v-4.5"/></svg>',
+    cm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12h2M8 8v8M12 5v14M16 8v8M20 12h-2"/></svg>'
+  };
+  var state={award:'inspiring',campus:'qt',pick:null,voted:{}};
+  var $=function(id){return document.getElementById(id)};
+  function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+  function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  /* hero wave */
+  var wave=$('wave');
+  for(var i=0;i<56;i++){
+    var h=18+Math.round((Math.sin(i*.42)+Math.sin(i*.17+1.3))*13+26);
+    var b=document.createElement('b');
+    b.style.setProperty('--h',Math.max(8,Math.min(64,h))+'px');
+    b.style.setProperty('--d',(-i*0.07).toFixed(2)+'s');
+    wave.appendChild(b);
+  }
+
+  /* awards overview */
+  var groups=$('award-groups');
+  function groupBox(title,sub,list,cls,zone){
+    var g=el('div','group '+cls);
+    g.appendChild(el('span','zone',zone));
+    g.appendChild(el('h3',null,title+'<small>'+sub+'</small>'));
+    list.forEach(function(a){
+      var row=el('div','award');
+      row.appendChild(el('div','ico',icons[a.pool]));
+      var t=el('div');
+      t.innerHTML='<b>'+a.name+'</b>'+(a.vi?'<span class="vi">'+a.vi+'</span>':'')+'<p>'+a.desc+'</p>';
+      row.appendChild(t);g.appendChild(row);
+    });
+    return g;
+  }
+  groups.appendChild(groupBox('Giải thưởng Giáo viên','4 hạng mục đề cử Giáo viên',awards.filter(function(a){return a.group==='gv'}),'gv','Khu Giáo viên'));
+  groups.appendChild(groupBox('Giải thưởng CM','4 hạng mục đề cử Class Manager',awards.filter(function(a){return a.group==='cm'}),'cm','Khu Class Manager'));
+
+  /* step 1 */
+  var chips=$('chips');
+  awards.forEach(function(a){
+    var b=el('button','chip','<b>'+a.name+'</b><span>'+(a.pool==='gv'?'Đề cử Giáo viên':'Đề cử Class Manager')+'</span>');
+    b.type='button';b.setAttribute('aria-pressed','false');b.dataset.id=a.id;
+    b.addEventListener('click',function(){
+      var prev=state.award?awards.filter(function(x){return x.id===state.award})[0]:null;
+      state.award=a.id;
+      if(prev&&prev.pool!==a.pool)state.pick=null;
+      renderChips();renderCards();renderMsg();
+    });
+    chips.appendChild(b);
+  });
+  function renderChips(){
+    [].forEach.call(chips.children,function(c){c.setAttribute('aria-pressed',String(c.dataset.id===state.award))});
+  }
+
+  /* step 2 */
+  var tabs=$('tabs');
+  campuses.forEach(function(c){
+    var t=el('button','tab',c.name);t.type='button';t.setAttribute('role','tab');t.dataset.id=c.id;
+    t.addEventListener('click',function(){state.campus=c.id;renderCards()});
+    tabs.appendChild(t);
+  });
+  var hues=['#8b5cf6','#d9548f','#e8620a','#5b6cf0','#c0408a','#b8541f'];
+  function initials(name){
+    var w=name.replace(/^Cô\s+/,'').split(/\s+/);
+    return (w[0][0]+w[w.length-1][0]).toUpperCase();
+  }
+  function renderCards(){
+    var award=awards.filter(function(a){return a.id===state.award})[0];
+    var camp=campuses.filter(function(c){return c.id===state.campus})[0];
+    [].forEach.call(tabs.children,function(t){t.setAttribute('aria-selected',String(t.dataset.id===state.campus))});
+    var cards=$('cards');cards.innerHTML='';
+    if(!award){
+      $('pool-hint').textContent='Chọn một hạng mục ở bước 1 để xem danh sách đề cử.';
+      cards.appendChild(el('div','empty','Danh sách đề cử sẽ hiện ở đây sau khi bạn chọn hạng mục.'));
+      return;
+    }
+    var label=award.pool==='gv'?'Giáo viên':'Class Manager';
+    $('pool-hint').textContent='Hạng mục '+award.name+': chọn cơ sở, rồi bấm nút Bình chọn dưới ảnh '+label+' bạn muốn gửi tiếng vọng.';
+    var list=camp[award.pool];
+    if(!list.length){cards.appendChild(el('div','empty','Cơ sở '+camp.name+' chưa có '+label+' trong danh sách đề cử.'));return}
+    list.forEach(function(n,i){
+      var key=camp.id+'|'+award.pool+'|'+n;
+      var vkey=award.id+'|'+key,voted=!!state.voted[vkey];
+      var c=el('article','person');
+      c.innerHTML='<span class="avatar" style="--a:'+hues[(i+camp.name.length)%hues.length]+'">'+initials(n)+'<small>Ảnh</small></span><div class="info"><span class="name">'+esc(n)+'</span><span class="role">'+label+' · '+camp.name+'</span></div>';
+      var b=el('button','vote-btn'+(voted?' voted':''),voted?'Đã bình chọn':'Bình chọn');
+      b.type='button';
+      if(voted){b.disabled=true}
+      else b.addEventListener('click',function(){
+        state.pick={key:key,vkey:vkey,name:n,role:label,campus:camp.name};
+        openSheet();
+      });
+      c.appendChild(b);
+      cards.appendChild(c);
+    });
+  }
+
+  /* step 3 */
+  var msg=$('msg');
+  function sentences(s){return (s.trim().match(/[^.!?…]+[.!?…]*/g)||[]).filter(function(x){return x.trim().length>1}).length}
+  function renderMsg(){
+    var award=awards.filter(function(a){return a.id===state.award})[0];
+    $('picked').innerHTML='Bạn đang bình chọn cho: <strong>'+(state.pick?esc(state.pick.name)+' ('+state.pick.campus+')':'chưa chọn')+'</strong>'+(award?' <span class="pill">'+award.name+'</span>':'');
+    var n=sentences(msg.value),len=msg.value.length;
+    $('sent-count').innerHTML=n>3?'<span class="bad">'+n+' câu (tối đa 3)</span>':n+' câu';
+    $('len-count').textContent=len+' / 400 ký tự';
+    var ok=award&&state.pick&&n>=1&&n<=3&&len<=400;
+    $('submit').disabled=!ok;
+    $('submit-hint').textContent=ok?'Sẵn sàng gửi.':'Hoàn thành cả 3 bước để gửi.';
+  }
+  msg.addEventListener('input',renderMsg);
+  var lastFocus=null;
+  function openSheet(){
+    lastFocus=document.activeElement;
+    msg.value='';$('done').classList.remove('show');
+    $('backdrop').hidden=false;$('sheet').hidden=false;
+    renderMsg();
+    setTimeout(function(){msg.focus()},50);
+  }
+  function closeSheet(){
+    $('backdrop').hidden=true;$('sheet').hidden=true;
+    if(lastFocus&&lastFocus.focus&&document.body.contains(lastFocus))lastFocus.focus();
+  }
+  $('sheet-close').addEventListener('click',closeSheet);
+  $('backdrop').addEventListener('click',closeSheet);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('sheet').hidden)closeSheet()});
+  $('submit').addEventListener('click',function(){
+    var award=awards.filter(function(a){return a.id===state.award})[0];
+    var d=$('done');
+    state.voted[state.pick.vkey]=true;
+    $('submit').disabled=true;
+    renderCards();
+    d.innerHTML='<b>Cảm ơn bạn đã gửi một Echo.</b><br>Bạn đã chọn '+esc(state.pick.name)+' cho giải '+award.name+'. Đây là bản minh họa bố cục nên dữ liệu chưa được gửi đi.';
+    d.classList.add('show');
+    d.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+
+  /* composer */
+  var cKind=$('c-kind'),cCampus=$('c-campus'),cPerson=$('c-person'),cMsg=$('c-msg');
+  function fillCampus(){
+    var k=cKind.value,keep=cCampus.value;
+    cCampus.innerHTML='';
+    campuses.forEach(function(c){
+      if(!c[k].length)return;
+      var o=document.createElement('option');o.value=c.id;o.textContent=c.name;cCampus.appendChild(o);
+    });
+    if(keep&&[].some.call(cCampus.options,function(o){return o.value===keep}))cCampus.value=keep;
+    fillPerson();
+  }
+  function fillPerson(){
+    var c=campuses.filter(function(x){return x.id===cCampus.value})[0];
+    cPerson.innerHTML='';
+    c[cKind.value].forEach(function(n){
+      var o=document.createElement('option');o.value=n;o.textContent=n;cPerson.appendChild(o);
+    });
+    showWho();
+  }
+  function showWho(){
+    var c=campuses.filter(function(x){return x.id===cCampus.value})[0];
+    var n=cPerson.value,label=cKind.value==='gv'?'Giáo viên':'Class Manager';
+    var idx=c[cKind.value].indexOf(n);
+    $('c-who').innerHTML='<span class="avatar" style="--a:'+hues[(idx+c.name.length)%hues.length]+'">'+initials(n)+'</span><div><b>'+esc(n)+'</b><span>'+label+' · '+c.name+'</span></div>';
+  }
+  function checkComposer(){
+    var n=sentences(cMsg.value),len=cMsg.value.length;
+    $('c-sent').innerHTML=n>3?'<span class="bad">'+n+' câu (tối đa 3)</span>':n+' câu';
+    $('c-len').textContent=len+' / 400 ký tự';
+    var ok=n>=1&&n<=3&&len<=400;
+    $('c-submit').disabled=!ok;
+    $('c-hint').textContent=ok?'Sẵn sàng gửi.':(n>3?'Rút gọn còn tối đa 3 câu để gửi.':'Viết ít nhất 1 câu để gửi.');
+  }
+  cKind.addEventListener('change',fillCampus);
+  cCampus.addEventListener('change',fillPerson);
+  cPerson.addEventListener('change',showWho);
+  cMsg.addEventListener('input',checkComposer);
+  $('composer').addEventListener('submit',function(e){
+    e.preventDefault();
+    if($('c-submit').disabled)return;
+    var d=$('c-done');
+    d.innerHTML='<b>Cảm ơn bạn đã gửi một Echo.</b><br>Lời nhắn cho '+esc(cPerson.value)+' đã sẵn sàng. Đây là bản minh họa bố cục nên dữ liệu chưa được gửi đi.';
+    d.classList.add('show');
+  });
+  fillCampus();checkComposer();
+
+  /* wall */
+  var samples=[
+    {t:'Có hôm em muốn nghỉ học vì áp lực, và tin nhắn hỏi thăm của cô đã giữ em ở lại. Giờ em tự tin nói tiếng Anh hơn nhiều.',a:'Endless Echo',w:'Học viên · ví dụ'},
+    {t:'Thầy làm cả lớp cười suốt 90 phút mà vẫn nhớ được từ vựng. Chưa buổi nào em thấy thời gian trôi nhanh như vậy.',a:'Energy Echo',w:'Học viên · ví dụ'},
+    {t:'Mỗi lần lớp có thay đổi lịch, bạn ấy đều báo sớm và rõ ràng, nên phụ huynh và các bạn chưa bao giờ phải lo lắng.',a:'Connecting Echo',w:'Phụ huynh · ví dụ'},
+    {t:'Cô nhớ mục tiêu IELTS của từng bạn và nhận xét bài viết rất kỹ. Điểm Writing của em tăng rõ sau hai tháng.',a:'Golden Mentor Echo',w:'Học viên · ví dụ'},
+    {t:'Phía sau mỗi buổi học trơn tru là một người đến sớm, kiểm tra từng chi tiết mà không ai nhìn thấy.',a:'Silent Echo',w:'Giáo viên · ví dụ'},
+    {t:'Mới vào lớp được vài tháng nhưng cô đã làm em thích học trở lại. Em mong được học tiếp với cô.',a:'Rising Echo',w:'Học viên · ví dụ'}
+  ];
+  var wall=$('wall');
+  samples.forEach(function(s){
+    var n=el('article','note','<q>'+esc(s.t)+'</q>');
+    n.appendChild(el('footer',null,'<span class="pill">'+s.a+'</span><span>'+s.w+'</span>'));
+    wall.appendChild(n);
+  });
+
+  renderChips();renderCards();renderMsg();
+})();
+</script>
+
+</body></html>
