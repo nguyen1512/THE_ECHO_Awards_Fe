@@ -10,8 +10,11 @@ export class GoogleSheetsService {
   /**
    * Kiểm tra xem cấu hình Webapp URL hay Service Account được kích hoạt
    */
-  private static getWebappUrl(): string | undefined {
-    return process.env.GOOGLE_SHEET_WEBAPP_URL;
+  private static getWebappUrl(): string {
+    return (
+      process.env.GOOGLE_SHEET_WEBAPP_URL ||
+      'https://script.google.com/macros/s/AKfycbymf6xQcXYv_yIWzwa-4jwnXYyNUHHqr-m-nzqpaYm_J1B90thpLgcpAjLUxtpnj1cwnw/exec'
+    );
   }
 
   /**
