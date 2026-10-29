@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #02081f;
+  --surface: #0a1a60;
+  --surface-2: #112680;
+  --line: #2b47b0;
+  --fg: #f2f6ff;
+  --muted: #a9b9e8;
+  --copper: #ff9a5c;
+  --orange: #ff8a3d;
+  --orange-ink: #1a0a00;
+  --star: #7fb2ff;
+  --ring: rgba(255, 154, 92, 0.4);
+  --chrome: linear-gradient(180deg, #ffffff 0%, #d4dcf7 42%, #8c9bd0 54%, #eef2ff 100%);
+  --stars: radial-gradient(1.4px 1.4px at 20px 30px, #8fb4ff, transparent),
+    radial-gradient(1px 1px at 95px 85px, #ffffff, transparent),
+    radial-gradient(1.6px 1.6px at 160px 22px, #6aa8ff, transparent),
+    radial-gradient(1px 1px at 60px 118px, #cfe0ff, transparent),
+    radial-gradient(1.2px 1.2px at 210px 96px, #9cc4ff, transparent),
+    radial-gradient(1px 1px at 128px 142px, #ffffff, transparent),
+    radial-gradient(1.3px 1.3px at 36px 74px, #7fb2ff, transparent);
+  --sky: linear-gradient(180deg, #010419 0%, #04124f 22%, #07207f 42%, #05164f 66%, #02081f 86%, #010311 100%);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: var(--stars), var(--sky);
+  background-size: 240px 160px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  color: var(--fg);
+  font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* Chrome text effect */
+.chrome-text {
+  background: var(--chrome);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Display font class */
+.font-display {
+  font-family: var(--font-unbounded), system-ui, sans-serif;
+}
+
+/* Script cursive font class */
+.font-script {
+  font-family: var(--font-playball), cursive;
+}
+
+/* Twinkle animations */
+.twinkle {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.twinkle::before,
+.twinkle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  animation: tw 4.5s ease-in-out infinite alternate;
+}
+
+.twinkle::before {
+  background-image: radial-gradient(3px 3px at 8% 14%, #a9ccff, transparent),
+    radial-gradient(2.5px 2.5px at 23% 62%, #ffffff, transparent),
+    radial-gradient(3px 3px at 41% 28%, #8fb8ff, transparent),
+    radial-gradient(2.5px 2.5px at 57% 78%, #ffffff, transparent),
+    radial-gradient(3px 3px at 74% 20%, #a9ccff, transparent),
+    radial-gradient(2.5px 2.5px at 91% 52%, #8fb8ff, transparent),
+    radial-gradient(3px 3px at 66% 46%, #ffffff, transparent);
+}
+
+.twinkle::after {
+  animation-delay: -2.2s;
+  background-image: radial-gradient(3px 3px at 15% 40%, #8fb8ff, transparent),
+    radial-gradient(2.5px 2.5px at 30% 10%, #ffffff, transparent),
+    radial-gradient(3px 3px at 48% 58%, #a9ccff, transparent),
+    radial-gradient(2.5px 2.5px at 63% 8%, #8fb8ff, transparent),
+    radial-gradient(3px 3px at 82% 70%, #ffffff, transparent),
+    radial-gradient(2.5px 2.5px at 95% 24%, #a9ccff, transparent),
+    radial-gradient(3px 3px at 4% 86%, #ffffff, transparent);
+}
+
+@keyframes tw {
+  0% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Orbit Arcs */
+.arcs {
+  position: absolute;
+  inset: -14% -4%;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-left-color: var(--copper);
+  border-right-color: var(--copper);
+  filter: drop-shadow(0 0 10px var(--ring));
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.arcs.b {
+  inset: -2% 8%;
+  border-left-color: var(--fg);
+  border-right-color: var(--fg);
+  opacity: 0.35;
+  filter: none;
+  border-width: 2px;
+}
+
+@media (max-width: 700px) {
+  .arcs {
+    inset: -6% -30%;
+  }
+  .arcs.b {
+    display: none;
+  }
+}

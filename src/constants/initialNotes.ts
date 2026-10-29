@@ -1,0 +1,58 @@
+import { EchoMessageItem } from '@/types/echo';
+
+export const INITIAL_ECHO_NOTES: EchoMessageItem[] = [
+  {
+    id: 'note-1',
+    senderName: 'Nguyễn Minh Châu',
+    campusName: 'Quang Trung',
+    recipientRole: 'Giáo viên',
+    recipientName: 'Cô Nguyễn Thị Mỹ Hạnh',
+    message: 'Có hôm em muốn nghỉ học vì áp lực, và tin nhắn hỏi thăm của cô đã giữ em ở lại. Giờ em tự tin nói tiếng Anh hơn nhiều.',
+    createdAt: '2026-10-25T08:30:00Z',
+  },
+  {
+    id: 'note-2',
+    senderName: 'Trần Gia Bảo',
+    campusName: 'Phạm Thận Duật',
+    recipientRole: 'Giáo viên',
+    recipientName: 'Thầy Hoàng Tiến Minh',
+    message: 'Thầy làm cả lớp cười suốt 90 phút mà vẫn nhớ được từ vựng. Chưa buổi nào em thấy thời gian trôi nhanh như vậy.',
+    createdAt: '2026-10-26T10:15:00Z',
+  },
+  {
+    id: 'note-3',
+    senderName: 'Lê Phương Thảo',
+    campusName: 'Phùng Khoang',
+    recipientRole: 'Class Manager',
+    recipientName: 'Chị Nguyễn Ngọc Chi',
+    message: 'Mỗi lần lớp đổi lịch, bạn CM đều báo sớm và rõ ràng, nên cả lớp chưa bao giờ phải lo lắng.',
+    createdAt: '2026-10-26T14:45:00Z',
+  },
+  {
+    id: 'note-4',
+    senderName: 'Phạm Quốc Anh',
+    campusName: 'Hoàng Ngân',
+    recipientRole: 'Giáo viên',
+    recipientName: 'Cô Nguyễn Thị Phương Loan',
+    message: 'Cô nhớ mục tiêu IELTS của từng bạn và nhận xét bài viết rất kỹ. Điểm Writing của em tăng rõ sau hai tháng.',
+    createdAt: '2026-10-27T09:20:00Z',
+  },
+  {
+    id: 'note-5',
+    senderName: 'Hoàng Thu Hà',
+    campusName: 'Minh Khai + Hòa Lạc',
+    recipientRole: 'Class Manager',
+    recipientName: 'Chị Nguyễn Thu Khương Anh',
+    message: 'Chị CM kiên nhẫn nhắc em làm bài mỗi tuần, cả những lúc em chán nản nhất. Em cảm ơn chị rất nhiều.',
+    createdAt: '2026-10-28T16:00:00Z',
+  },
+  {
+    id: 'note-6',
+    senderName: 'Vũ Đức Huy',
+    campusName: 'Mỹ Đình',
+    recipientRole: 'Giáo viên',
+    recipientName: 'Thầy Hoàng Quang Đức',
+    message: 'Mới học với thầy vài tháng nhưng em đã thích học tiếng Anh trở lại. Em mong được học tiếp với thầy.',
+    createdAt: '2026-10-29T07:10:00Z',
+  },
+];
