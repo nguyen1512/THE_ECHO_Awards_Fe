@@ -32,7 +32,7 @@ export function NomineeCard({
     <article className="text-[#f2f6ff] bg-[#02081f] border-[1.5px] border-[#2b47b0] rounded-2xl p-4 md:p-5 flex flex-col items-center text-center gap-2 hover:border-[#7fb2ff] transition-colors shadow-md">
       {/* Avatar Container */}
       <div
-        className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center font-display font-semibold text-xl md:text-2xl text-white relative mb-2 shadow-inner ${
+        className={`w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full flex items-center justify-center font-display font-semibold text-3xl md:text-4xl text-white relative mb-2 shadow-inner ${
           avatarUrl ? 'border-2 border-[#ff9a5c]' : 'border-2 border-dashed border-white/60'
         }`}
         style={{ backgroundColor: avatarColor }}
