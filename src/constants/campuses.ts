@@ -55,15 +55,15 @@ export const CAMPUSES_DATA: CampusItem[] = [
       'Nguyễn Anh Đức',
       'Trần Nhật Tài',
       'Nguyễn Thị Khánh Linh',
-      'Cô Vũ Thị Ngân',
-      'Cô Trương Ánh Ngọc',
+      'Vũ Thị Ngân',
+      'Trương Ánh Ngọc',
     ],
     cm: ['Phạm Minh Hương', 'Trần Thị Kim Huệ', 'Trần Yến Nhi'],
   },
   {
     id: 'md',
     name: 'Mỹ Đình',
-    gv: ['Cô Minh Phương', 'Hoàng Quang Đức'],
+    gv: ['Phan Thị Minh Phương', 'Hoàng Quang Đức'],
     cm: [],
   },
   {
