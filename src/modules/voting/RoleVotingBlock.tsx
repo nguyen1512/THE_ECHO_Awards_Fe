@@ -3,6 +3,7 @@ import { AwardItem, RoleType } from '@/types/awards';
 import { CampusItem } from '@/types/campuses';
 import { Chip } from '@/components/ui/Chip';
 import { NomineeCard } from './NomineeCard';
+import { getNomineeAvatar } from '@/constants/avatars';
 
 interface RoleVotingBlockProps {
   stepNumber: number;
@@ -80,6 +81,7 @@ export function RoleVotingBlock({
                 campusName={campus.name}
                 awardName={currentAward.name}
                 isVoted={isVoted}
+                avatarUrl={role === 'gv' ? getNomineeAvatar(campus.id, nominee) : undefined}
                 onVote={() => onOpenVote(nominee)}
               />
             );

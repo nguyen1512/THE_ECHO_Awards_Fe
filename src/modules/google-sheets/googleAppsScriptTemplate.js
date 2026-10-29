@@ -8,10 +8,11 @@
  * 2. Đổi tên 2 trang tính (Tabs) thành:
  *    - "Votes"
  *    - "EchoMessages"
- * 3. Hàng 1 của tab "Votes" đặt tiêu đề:
- *    [A: Timestamp | B: Role | C: AwardId | D: AwardName | E: CampusId | F: CampusName | G: NomineeName | H: VoterMessage]
- * 4. Hàng 1 của tab "EchoMessages" đặt tiêu đề:
- *    [A: Timestamp | B: VoterName | C: RecipientRole | D: CampusId | E: CampusName | F: RecipientName | G: Message | H: Status]
+ * 3. Tiêu đề hàng 1 tab "Votes" (tự tạo khi chạy hàm setupHeaders):
+ *    [A: Thời gian | B: Vai trò | C: Mã giải thưởng | D: Tên giải thưởng | E: Mã cơ sở | F: Tên cơ sở | G: Người được bình chọn | H: Lời nhắn]
+ * 4. Tiêu đề hàng 1 tab "EchoMessages" (tự tạo khi chạy hàm setupHeaders):
+ *    [A: Thời gian | B: Người gửi | C: Vai trò người nhận | D: Mã cơ sở | E: Tên cơ sở | F: Người nhận | G: Lời nhắn | H: Trạng thái]
+ *    >> Chạy hàm setupHeaders() một lần trong Apps Script để tự thêm tiêu đề tiếng Việt vào 2 tab.
  * 5. Trên menu Google Sheet, chọn: Tiện ích mở rộng (Extensions) > Apps Script
  * 6. Xóa toàn bộ mã cũ và dán toàn bộ đoạn mã bên dưới vào.
  * 7. Nhấn "Triển khai" (Deploy) > "Triển khai mới" (New deployment).
@@ -24,6 +25,43 @@
  * =========================================================================
  */
 
+var VOTES_HEADERS = [
+  "Thời gian", "Vai trò", "Mã giải thưởng", "Tên giải thưởng",
+  "Mã cơ sở", "Tên cơ sở", "Người được bình chọn", "Lời nhắn"
+];
+var MESSAGES_HEADERS = [
+  "Thời gian", "Người gửi", "Vai trò người nhận", "Mã cơ sở",
+  "Tên cơ sở", "Người nhận", "Lời nhắn", "Trạng thái"
+];
+
+/**
+ * Đảm bảo hàng 1 của sheet là tiêu đề tiếng Việt.
+ * Nếu sheet đã có dữ liệu mà chưa có tiêu đề thì chèn thêm 1 hàng ở trên cùng.
+ */
+function ensureHeaders_(sheet, headers) {
+  var lastRow = sheet.getLastRow();
+  var first = lastRow > 0 ? String(sheet.getRange(1, 1).getValue()) : "";
+  if (first !== headers[0]) {
+    if (lastRow > 0) {
+      sheet.insertRowBefore(1);
+    }
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  }
+  sheet.getRange(1, 1, 1, headers.length)
+    .setFontWeight("bold")
+    .setBackground("#fde9d9");
+  sheet.setFrozenRows(1);
+}
+
+/** Chạy thủ công 1 lần để đổi tiêu đề 2 tab sang tiếng Việt */
+function setupHeaders() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var v = ss.getSheetByName("Votes") || ss.insertSheet("Votes");
+  var m = ss.getSheetByName("EchoMessages") || ss.insertSheet("EchoMessages");
+  ensureHeaders_(v, VOTES_HEADERS);
+  ensureHeaders_(m, MESSAGES_HEADERS);
+}
+
 function doPost(e) {
   try {
     var contents = JSON.parse(e.postData.contents);
@@ -32,13 +70,8 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
 
     if (action === "appendVote") {
-      var sheetVotes = ss.getSheetByName("Votes");
-      if (!sheetVotes) {
-        sheetVotes = ss.insertSheet("Votes");
-        sheetVotes.appendRow([
-          "Timestamp", "Role", "AwardId", "AwardName", "CampusId", "CampusName", "NomineeName", "VoterMessage"
-        ]);
-      }
+      var sheetVotes = ss.getSheetByName("Votes") || ss.insertSheet("Votes");
+      ensureHeaders_(sheetVotes, VOTES_HEADERS);
       sheetVotes.appendRow([
         data.timestamp || new Date().toISOString(),
         data.role,
@@ -57,13 +90,8 @@ function doPost(e) {
     }
 
     if (action === "appendEchoMessage") {
-      var sheetMsgs = ss.getSheetByName("EchoMessages");
-      if (!sheetMsgs) {
-        sheetMsgs = ss.insertSheet("EchoMessages");
-        sheetMsgs.appendRow([
-          "Timestamp", "VoterName", "RecipientRole", "CampusId", "CampusName", "RecipientName", "Message", "Status"
-        ]);
-      }
+      var sheetMsgs = ss.getSheetByName("EchoMessages") || ss.insertSheet("EchoMessages");
+      ensureHeaders_(sheetMsgs, MESSAGES_HEADERS);
       sheetMsgs.appendRow([
         data.timestamp || new Date().toISOString(),
         data.voterName,
