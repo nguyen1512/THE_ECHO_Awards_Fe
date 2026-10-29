@@ -12,10 +12,10 @@ export function HeroSection() {
         <Image
           src="/keyvisual.jpg"
           alt="Vinh danh Giáo viên A&U 20/11 · THE ECHO · Every Lesson Leaves an Echo"
-          width={1920}
-          height={600}
+          width={1800}
+          height={666}
           priority
-          className="w-full h-auto max-h-[460px] object-cover object-center block"
+          className="w-full h-auto block"
         />
       </div>
 
