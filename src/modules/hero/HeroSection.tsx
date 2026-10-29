@@ -29,10 +29,10 @@ export function HeroSection() {
             SỰ KIỆN TRI ÂN 20/11
           </span>
           <h1 className="font-display font-bold text-2xl sm:text-4xl md:text-5xl uppercase tracking-wide chrome-text max-w-4xl">
-            THE ECHO Awards 2026
+            ECHO Awards 2026
           </h1>
           <p className="max-w-2xl text-base md:text-lg text-[#f2f6ff] leading-relaxed">
-            Chào mừng bạn đến với <strong>THE ECHO Awards</strong> – nơi học viên và toàn thể A&amp;U English cùng tôn vinh những người gieo mầm tri thức và gắn kết lớp học mỗi ngày.
+            Chào mừng bạn đến với <strong>ECHO Awards</strong> – nơi học viên và toàn thể A&amp;U English cùng tôn vinh những người gieo mầm tri thức và gắn kết lớp học mỗi ngày.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-2">

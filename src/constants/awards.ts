@@ -20,7 +20,7 @@ export const AWARDS_DATA: AwardsData = {
     {
       id: 'rising',
       name: 'Rising Echo',
-      desc: 'Dành cho giáo viên mới (dưới 1 năm) có tiềm năng và thành tích nổi bật.',
+      desc: 'Dành cho giáo viên mới có tiềm năng và thành tích nổi bật.',
     },
     {
       id: 'lasting',
