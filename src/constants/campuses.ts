@@ -57,6 +57,7 @@ export const CAMPUSES_DATA: CampusItem[] = [
       'Nguyễn Thị Khánh Linh',
       'Vũ Thị Ngân',
       'Trương Ánh Ngọc',
+      'Trần Thị Thu Uyên',
     ],
     cm: ['Phạm Minh Hương', 'Trần Thị Kim Huệ', 'Trần Yến Nhi'],
   },
@@ -74,7 +75,7 @@ export const CAMPUSES_DATA: CampusItem[] = [
       'Nguyễn Tuấn Anh',
       'Lê Tú Anh',
       'Nguyễn Thị Phương Loan',
-      'Thuỳ Trang',
+      'Vũ Thị Thùy Trang',
       'Cao Thị Diễm Quỳnh',
     ],
     cm: ['Lê Phú An'],
@@ -82,7 +83,7 @@ export const CAMPUSES_DATA: CampusItem[] = [
   {
     id: 'btl',
     name: 'Bắc Từ Liêm',
-    gv: ['Vũ Hoài An', 'Thu Uyên'],
+    gv: ['Vũ Hoài An'],
     cm: ['Ngô Thị Hằng Nga'],
   },
 ];

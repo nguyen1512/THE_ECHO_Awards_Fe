@@ -39,6 +39,7 @@ export const NOMINEE_AVATARS: Record<string, string> = {
   'ptd|Nguyễn Thị Khánh Linh': '/avatars/ptd-nguyen-thi-khanh-linh.jpg',
   'ptd|Vũ Thị Ngân': '/avatars/ptd-vu-thi-ngan.jpg',
   'ptd|Trương Ánh Ngọc': '/avatars/ptd-truong-anh-ngoc.jpg',
+  'ptd|Trần Thị Thu Uyên': '/avatars/ptd-tran-thi-thu-uyen.jpg',
   'ptd|Phạm Minh Hương': '/avatars/ptd-pham-minh-huong.jpg',
   'ptd|Trần Thị Kim Huệ': '/avatars/ptd-tran-thi-kim-hue.jpg',
   'ptd|Trần Yến Nhi': '/avatars/ptd-tran-yen-nhi.jpg',
@@ -50,7 +51,6 @@ export const NOMINEE_AVATARS: Record<string, string> = {
   'hn|Cao Thị Diễm Quỳnh': '/avatars/hn-cao-thi-diem-quynh.jpg',
   'hn|Lê Phú An': '/avatars/hn-le-phu-an.jpg',
   'btl|Vũ Hoài An': '/avatars/btl-vu-hoai-an.jpg',
-  'btl|Thu Uyên': '/avatars/btl-thu-uyen.jpg',
   'btl|Ngô Thị Hằng Nga': '/avatars/btl-ngo-thi-hang-nga.jpg',
 };
 
