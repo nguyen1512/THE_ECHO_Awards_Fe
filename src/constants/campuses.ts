@@ -28,6 +28,7 @@ export const CAMPUSES_DATA: CampusItem[] = [
       'Nguyễn Hải Nam',
       'Trần Tuấn Hải',
       'Bùi Thị Như Quỳnh',
+      'Nguyễn Mỹ Minh Tâm',
     ],
     cm: ['Nguyễn Ngọc Chi', 'Phạm Hương Giang'],
   },
