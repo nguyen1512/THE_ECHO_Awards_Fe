@@ -3,14 +3,9 @@ import React from 'react';
 export function TimelineSection() {
   const steps = [
     {
-      period: '15/10 - 05/11',
+      period: '29/10 - 16/11',
       desc: 'Bình chọn Online cơ sở',
       active: true,
-    },
-    {
-      period: '06/11 - 15/11',
-      desc: 'Hội đồng chuyên môn đánh giá',
-      active: false,
     },
     {
       period: '20/11',
