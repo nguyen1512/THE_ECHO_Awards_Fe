@@ -9,6 +9,7 @@ export interface EchoMessageItem {
   recipientName: string;
   message: string;
   createdAt?: string;
+  status?: string;
 }
 
 export interface EchoMessagePayload {
