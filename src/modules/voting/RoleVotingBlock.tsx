@@ -81,7 +81,7 @@ export function RoleVotingBlock({
                 campusName={campus.name}
                 awardName={currentAward.name}
                 isVoted={isVoted}
-                avatarUrl={role === 'gv' ? getNomineeAvatar(campus.id, nominee) : undefined}
+                avatarUrl={getNomineeAvatar(campus.id, nominee)}
                 onVote={() => onOpenVote(nominee)}
               />
             );
