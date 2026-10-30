@@ -41,6 +41,12 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  display: inline-block;
+  padding-top: 0.15em;
+  padding-bottom: 0.05em;
+  margin-top: -0.15em;
+  margin-bottom: -0.05em;
+  overflow: visible;
 }
 
 /* Display font class */

@@ -6,7 +6,7 @@ interface AwardGroupCardProps {
   role: RoleType;
   title: string;
   sub: string;
-  zone: string;
+  zone?: string;
   awards: AwardItem[];
 }
 
@@ -47,9 +47,11 @@ export function AwardGroupCard({ role, title, sub, zone, awards }: AwardGroupCar
       className={`bg-[#0a1a60] border border-[#2b47b0] border-t-[5px] ${topColorClass} rounded-2xl p-6 md:p-8 flex flex-col gap-5 shadow-xl`}
     >
       <div className="flex flex-col gap-1">
-        <span className={`text-xs font-bold tracking-[0.16em] uppercase ${zoneColorClass}`}>
-          {zone}
-        </span>
+        {zone ? (
+          <span className={`text-xs font-bold tracking-[0.16em] uppercase ${zoneColorClass}`}>
+            {zone}
+          </span>
+        ) : null}
         <h3 className="font-display text-base md:text-lg font-bold uppercase text-white">
           {title}
           <small className="block text-xs md:text-sm font-normal text-[#a9b9e8] capitalize mt-1">

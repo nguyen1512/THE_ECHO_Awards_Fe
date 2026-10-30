@@ -10,7 +10,7 @@ export function AwardsOverview() {
           <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#ff9a5c]">
             HỆ THỐNG GIẢI THƯỞNG
           </p>
-          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wide chrome-text">
+          <h2 className="font-sans font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-wide chrome-text py-1 leading-tight">
             TỔNG QUAN HẠNG MỤC
           </h2>
           <p className="text-sm md:text-base text-[#a9b9e8]">
@@ -23,14 +23,12 @@ export function AwardsOverview() {
             role="gv"
             title="Giải thưởng Giáo viên"
             sub="5 giải dành cho Giáo viên"
-            zone="Khu Giáo viên"
             awards={AWARDS_DATA.gv}
           />
           <AwardGroupCard
             role="cm"
             title="Giải thưởng CM"
             sub="3 giải dành cho Class Manager"
-            zone="Khu Class Manager"
             awards={AWARDS_DATA.cm}
           />
         </div>
