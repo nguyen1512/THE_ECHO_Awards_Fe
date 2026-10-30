@@ -40,7 +40,9 @@ src/
 │   │   ├── RoleVotingBlock.tsx
 │   │   ├── NomineeCard.tsx
 │   │   ├── VoteBottomSheet.tsx
-│   │   └── hooks/useVoting.ts         # Quản lý state chọn cơ sở, chọn giải, bình chọn
+│   │   ├── StudentInfoFields.tsx      # 2 ô Họ tên + Mã số học viên trong form bình chọn
+│   │   ├── hooks/useVoting.ts         # Quản lý state chọn cơ sở, chọn giải, bình chọn
+│   │   └── hooks/useStudentInfo.ts    # Validate + ghi nhớ (localStorage) tên/mã học viên
 │   ├── echo-message/                  # Lời nhắn từ học viên
 │   │   ├── EchoMessageSection.tsx
 │   │   ├── EchoComposer.tsx
@@ -49,7 +51,7 @@ src/
 │   │   └── hooks/useEchoMessage.ts    # Quản lý form gửi tin nhắn và nạp tin nhắn
 │   └── google-sheets/                 # Service kết nối Google Sheets
 │       ├── googleSheetsService.ts
-│       └── googleAppsScriptTemplate.js # Mẫu Google Apps Script cho người dùng triển khai
+│       (Mã Google Apps Script: docs/google-apps-script.gs, hướng dẫn: docs/GOOGLE_SHEET_SETUP.md)
 ├── types/
 │   ├── awards.ts
 │   ├── campuses.ts

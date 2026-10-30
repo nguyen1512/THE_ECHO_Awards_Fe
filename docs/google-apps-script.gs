@@ -9,7 +9,9 @@
  *    - "Votes"
  *    - "EchoMessages"
  * 3. Tiêu đề hàng 1 tab "Votes" (tự tạo khi chạy hàm setupHeaders):
- *    [A: Thời gian | B: Vai trò | C: Mã giải thưởng | D: Tên giải thưởng | E: Mã cơ sở | F: Tên cơ sở | G: Người được bình chọn | H: Lời nhắn]
+ *    [A: Thời gian (giờ VN) | B: Vai trò | C: Mã giải thưởng | D: Tên giải thưởng | E: Mã cơ sở | F: Tên cơ sở
+ *     | G: Người được bình chọn | H: Lời nhắn | I: Tên học viên | J: Mã số học viên]
+ *    Cột I, J được thêm vào CUỐI nên dữ liệu cũ (A–H) giữ nguyên vị trí.
  * 4. Tiêu đề hàng 1 tab "EchoMessages" (tự tạo khi chạy hàm setupHeaders):
  *    [A: Thời gian | B: Người gửi | C: Vai trò người nhận | D: Mã cơ sở | E: Tên cơ sở | F: Người nhận | G: Lời nhắn | H: Trạng thái]
  *    >> Chạy hàm setupHeaders() một lần trong Apps Script để tự thêm tiêu đề tiếng Việt vào 2 tab.
@@ -22,13 +24,20 @@
  * 8. Nhấn Triển khai và cấp quyền. Sao chép "URL ứng dụng web" (Web App URL).
  * 9. Dán URL vào file `.env.local` của website:
  *    GOOGLE_SHEET_WEBAPP_URL="https://script.google.com/macros/s/.../exec"
+ *    (Khi sửa mã: Deploy > Manage deployments > Edit > Version: New version để giữ nguyên URL.)
+ * Xem hướng dẫn chi tiết: docs/GOOGLE_SHEET_SETUP.md
  * =========================================================================
  */
 
+var TIMEZONE = "Asia/Ho_Chi_Minh";
+
 var VOTES_HEADERS = [
   "Thời gian", "Vai trò", "Mã giải thưởng", "Tên giải thưởng",
-  "Mã cơ sở", "Tên cơ sở", "Người được bình chọn", "Lời nhắn"
+  "Mã cơ sở", "Tên cơ sở", "Người được bình chọn", "Lời nhắn",
+  "Tên học viên", "Mã số học viên"
 ];
+// Vị trí cột (0-based) dùng cho kiểm tra trùng
+var COL_ROLE = 1, COL_AWARD_ID = 2, COL_CAMPUS_ID = 4, COL_NOMINEE = 6, COL_STUDENT_CODE = 9;
 var MESSAGES_HEADERS = [
   "Thời gian", "Người gửi", "Vai trò người nhận", "Mã cơ sở",
   "Tên cơ sở", "Người nhận", "Lời nhắn", "Trạng thái"
@@ -37,16 +46,15 @@ var MESSAGES_HEADERS = [
 /**
  * Đảm bảo hàng 1 của sheet là tiêu đề tiếng Việt.
  * Nếu sheet đã có dữ liệu mà chưa có tiêu đề thì chèn thêm 1 hàng ở trên cùng.
+ * Nếu đã có tiêu đề cũ (ít cột hơn) thì ghi đè hàng 1 để bổ sung các cột mới ở cuối.
  */
 function ensureHeaders_(sheet, headers) {
   var lastRow = sheet.getLastRow();
   var first = lastRow > 0 ? String(sheet.getRange(1, 1).getValue()) : "";
-  if (first !== headers[0]) {
-    if (lastRow > 0) {
-      sheet.insertRowBefore(1);
-    }
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  if (first !== headers[0] && lastRow > 0) {
+    sheet.insertRowBefore(1);
   }
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.getRange(1, 1, 1, headers.length)
     .setFontWeight("bold")
     .setBackground("#fde9d9");
@@ -62,6 +70,33 @@ function setupHeaders() {
   ensureHeaders_(m, MESSAGES_HEADERS);
 }
 
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Chống trùng: 1 mã học viên chỉ bình chọn 1 lần cho mỗi ứng viên ở mỗi giải
+ * (cùng khóa role|awardId|campusId|nomineeName mà website đang dùng).
+ * Các dòng cũ chưa có mã học viên (cột J trống) được bỏ qua.
+ */
+function isDuplicateVote_(sheet, data, studentCode) {
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return false;
+  var rows = sheet.getRange(2, 1, lastRow - 1, VOTES_HEADERS.length).getValues();
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    if (String(r[COL_STUDENT_CODE]).trim().toUpperCase() === studentCode &&
+        String(r[COL_ROLE]) === String(data.role) &&
+        String(r[COL_AWARD_ID]) === String(data.awardId) &&
+        String(r[COL_CAMPUS_ID]) === String(data.campusId) &&
+        String(r[COL_NOMINEE]) === String(data.nomineeName)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function doPost(e) {
   try {
     var contents = JSON.parse(e.postData.contents);
@@ -70,23 +105,46 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
 
     if (action === "appendVote") {
-      var sheetVotes = ss.getSheetByName("Votes") || ss.insertSheet("Votes");
-      ensureHeaders_(sheetVotes, VOTES_HEADERS);
-      sheetVotes.appendRow([
-        data.timestamp || new Date().toISOString(),
-        data.role,
-        data.awardId,
-        data.awardName,
-        data.campusId,
-        data.campusName,
-        data.nomineeName,
-        data.voterMessage
-      ]);
+      var studentCode = String(data.studentCode || "").trim().toUpperCase();
+      var studentName = String(data.studentName || "").trim();
+      if (!studentCode || !studentName) {
+        return json_({ success: false, code: "INVALID", message: "Thiếu tên hoặc mã số học viên" });
+      }
 
-      return ContentService.createTextOutput(JSON.stringify({
-        success: true,
-        message: "Vote appended successfully"
-      })).setMimeType(ContentService.MimeType.JSON);
+      // Khóa để 2 request đồng thời không cùng vượt qua bước kiểm tra trùng
+      var lock = LockService.getScriptLock();
+      lock.waitLock(20000);
+      try {
+        var sheetVotes = ss.getSheetByName("Votes") || ss.insertSheet("Votes");
+        ensureHeaders_(sheetVotes, VOTES_HEADERS);
+
+        if (isDuplicateVote_(sheetVotes, data, studentCode)) {
+          return json_({
+            success: false,
+            code: "DUPLICATE",
+            message: "Mã học viên đã bình chọn cho ứng viên này ở giải này"
+          });
+        }
+
+        var ts = data.timestamp ? new Date(data.timestamp) : new Date();
+        sheetVotes.appendRow([
+          Utilities.formatDate(ts, TIMEZONE, "yyyy-MM-dd HH:mm:ss"),
+          data.role,
+          data.awardId,
+          data.awardName,
+          data.campusId,
+          data.campusName,
+          data.nomineeName,
+          data.voterMessage,
+          studentName,
+          // Ghi dạng chuỗi để Sheet không tự đổi mã số (VD: 00123) thành số
+          "'" + studentCode
+        ]);
+      } finally {
+        lock.releaseLock();
+      }
+
+      return json_({ success: true, message: "Vote appended successfully" });
     }
 
     if (action === "appendEchoMessage") {

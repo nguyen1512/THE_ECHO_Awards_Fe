@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CAMPUSES_DATA } from '@/constants/campuses';
 import { AWARDS_DATA } from '@/constants/awards';
 import { CampusItem } from '@/types/campuses';
 import { AwardItem, RoleType } from '@/types/awards';
-import { VotePick, VotePayload } from '@/types/voting';
+import { VotePick, VotePayload, VoteFormValues, StudentInfo } from '@/types/voting';
 
 export function useVoting() {
   const [selectedCampusId, setSelectedCampusId] = useState<string>('qt');
@@ -18,6 +18,9 @@ export function useVoting() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submittedStudent, setSubmittedStudent] = useState<StudentInfo | null>(null);
+  const submittingRef = useRef(false);
 
   // Khôi phục URL search params và localStorage khi mount
   useEffect(() => {
@@ -94,6 +97,8 @@ export function useVoting() {
       award,
     });
     setSubmitSuccess(null);
+    setSubmitError(null);
+    setSubmittedStudent(null);
     setIsSheetOpen(true);
   };
 
@@ -102,10 +107,26 @@ export function useVoting() {
     setCurrentPick(null);
   };
 
-  const handleSubmitVote = async (message: string) => {
-    if (!currentPick || isSubmitting) return;
+  const markVoted = (vkey: string) => {
+    setVotedMap((prev) => {
+      const newMap = { ...prev, [vkey]: true };
+      try {
+        localStorage.setItem('echo_voted_keys', JSON.stringify(newMap));
+      } catch {
+        // Ignore
+      }
+      return newMap;
+    });
+  };
 
+  /** Trả về true nếu bình chọn đã được ghi nhận vào Google Sheet */
+  const handleSubmitVote = async ({ message, studentName, studentCode }: VoteFormValues) => {
+    // Dùng ref để chặn bấm 2 lần trong cùng một nhịp render
+    if (!currentPick || submittingRef.current) return false;
+
+    submittingRef.current = true;
     setIsSubmitting(true);
+    setSubmitError(null);
     const payload: VotePayload = {
       role: currentPick.role,
       awardId: currentPick.award.id,
@@ -114,6 +135,8 @@ export function useVoting() {
       campusName: currentPick.campus.name,
       nomineeName: currentPick.name,
       voterMessage: message,
+      studentName,
+      studentCode,
     };
 
     try {
@@ -123,28 +146,32 @@ export function useVoting() {
         body: JSON.stringify(payload),
       });
 
-      const resData = await res.json();
+      const resData = await res.json().catch(() => null);
 
-      // Lưu trạng thái đã vote
-      const newMap = { ...votedMap, [currentPick.vkey]: true };
-      setVotedMap(newMap);
-      try {
-        localStorage.setItem('echo_voted_keys', JSON.stringify(newMap));
-      } catch {
-        // Ignore
+      if (res.status === 409) {
+        // Mã học viên này đã bình chọn cho ứng viên này trước đó
+        markVoted(currentPick.vkey);
       }
 
+      if (!res.ok || !resData?.success) {
+        setSubmitError(
+          resData?.message || 'Không thể ghi nhận bình chọn lúc này. Vui lòng thử lại sau ít phút.'
+        );
+        return false;
+      }
+
+      markVoted(currentPick.vkey);
+      setSubmittedStudent({ studentName, studentCode });
       setSubmitSuccess(
         `Cảm ơn bạn đã gửi một Echo! Bạn đã bình chọn cho ${currentPick.name} ở giải ${currentPick.award.name}. Dữ liệu đã được ghi nhận thành công.`
       );
-    } catch {
-      // Fallback khi network lỗi
-      const newMap = { ...votedMap, [currentPick.vkey]: true };
-      setVotedMap(newMap);
-      setSubmitSuccess(
-        `Đã ghi nhận bình chọn cho ${currentPick.name} ở giải ${currentPick.award.name}!`
-      );
+      return true;
+    } catch (err) {
+      console.error('Lỗi gửi bình chọn:', err);
+      setSubmitError('Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại.');
+      return false;
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };
@@ -161,6 +188,8 @@ export function useVoting() {
     isSheetOpen,
     isSubmitting,
     submitSuccess,
+    submitError,
+    submittedStudent,
     handleSelectCampus,
     handleSelectAward,
     handleOpenVote,

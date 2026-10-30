@@ -6,6 +6,8 @@ import { INITIAL_ECHO_NOTES } from '@/constants/initialNotes';
 const memoryVotes: VoteRecord[] = [];
 const memoryEchoMessages: EchoMessageItem[] = [...INITIAL_ECHO_NOTES];
 
+export type AppendVoteResult = { status: 'ok'; mode: string } | { status: 'duplicate' };
+
 export class GoogleSheetsService {
   /**
    * Kiểm tra xem cấu hình Webapp URL hay Service Account được kích hoạt
@@ -18,9 +20,10 @@ export class GoogleSheetsService {
   }
 
   /**
-   * Lưu lượt bình chọn mới vào Google Sheet (Tab: Votes)
+   * Lưu lượt bình chọn mới vào Google Sheet (Tab: Votes).
+   * Ném lỗi nếu Google Sheet không ghi được — không báo thành công giả.
    */
-  public static async appendVote(vote: VotePayload): Promise<{ success: boolean; mode: string }> {
+  public static async appendVote(vote: VotePayload): Promise<AppendVoteResult> {
     const webappUrl = this.getWebappUrl();
     const timestamp = new Date().toISOString();
 
@@ -30,38 +33,48 @@ export class GoogleSheetsService {
       createdAt: timestamp,
     };
 
-    if (webappUrl) {
-      try {
-        const response = await fetch(webappUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'appendVote',
-            data: {
-              timestamp,
-              role: vote.role,
-              awardId: vote.awardId,
-              awardName: vote.awardName,
-              campusId: vote.campusId,
-              campusName: vote.campusName,
-              nomineeName: vote.nomineeName,
-              voterMessage: vote.voterMessage,
-            },
-          }),
-        });
-
-        if (response.ok) {
-          memoryVotes.unshift(record);
-          return { success: true, mode: 'google-sheets-webapp' };
-        }
-      } catch (err) {
-        console.error('Lỗi gửi vote tới Google Sheets WebApp:', err);
-      }
+    // Chỉ dùng in-memory khi chưa cấu hình Google Sheet (môi trường dev)
+    if (!webappUrl) {
+      memoryVotes.unshift(record);
+      return { status: 'ok', mode: 'in-memory-fallback' };
     }
 
-    // Fallback in-memory
+    const response = await fetch(webappUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'appendVote',
+        data: {
+          timestamp,
+          role: vote.role,
+          awardId: vote.awardId,
+          awardName: vote.awardName,
+          campusId: vote.campusId,
+          campusName: vote.campusName,
+          nomineeName: vote.nomineeName,
+          voterMessage: vote.voterMessage,
+          studentName: vote.studentName,
+          studentCode: vote.studentCode,
+        },
+      }),
+      signal: AbortSignal.timeout(20000),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Google Sheets WebApp trả về HTTP ${response.status}`);
+    }
+
+    // Apps Script luôn trả HTTP 200, kết quả thật nằm trong JSON body
+    const json = await response.json().catch(() => null);
+    if (json?.code === 'DUPLICATE') {
+      return { status: 'duplicate' };
+    }
+    if (!json?.success) {
+      throw new Error(`Google Sheets WebApp báo lỗi: ${json?.error || json?.message || 'phản hồi không hợp lệ'}`);
+    }
+
     memoryVotes.unshift(record);
-    return { success: true, mode: 'in-memory-fallback' };
+    return { status: 'ok', mode: 'google-sheets-webapp' };
   }
 
   /**

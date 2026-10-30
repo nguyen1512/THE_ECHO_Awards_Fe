@@ -67,3 +67,9 @@ Mỗi component phải duy trì sự phân tách rõ ràng giữa **Dữ liệu 
 }
 ```
 3. Nếu Google Sheet chưa được cấu hình biến môi trường, hệ thống tự động ghi nhận vào bộ nhớ đệm (In-memory Storage) và trả về thông báo mô phỏng thành công để không làm đứt gãy luồng trải nghiệm người dùng.
+4. Với bình chọn (`POST /api/votes`): khi Google Sheet ĐÃ cấu hình mà ghi thất bại (HTTP lỗi, timeout, hoặc JSON `success: false`), API trả lỗi (502) và UI báo lỗi — tuyệt đối không báo thành công giả. Trùng lượt (cùng mã học viên + khóa `role|awardId|campusId|nomineeName`) trả 409.
+
+### C. Thông tin học viên trong form bình chọn
+- `studentName`: bắt buộc, trim + gộp khoảng trắng, 2–100 ký tự, chữ cái Unicode (tiếng Việt có dấu).
+- `studentCode`: bắt buộc, trim, tự viết hoa, chỉ `A-Z0-9`, 3–20 ký tự.
+- Hàm chuẩn hóa/validate dùng chung client + server tại `src/utils/student.ts`.
