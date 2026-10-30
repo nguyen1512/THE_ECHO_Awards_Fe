@@ -19,6 +19,8 @@ export function VotingSection() {
     isSheetOpen,
     isSubmitting,
     submitSuccess,
+    submitError,
+    submittedStudent,
     handleSelectCampus,
     handleSelectAward,
     handleOpenVote,
@@ -89,6 +91,8 @@ export function VotingSection() {
         onSubmit={handleSubmitVote}
         isSubmitting={isSubmitting}
         successMessage={submitSuccess}
+        errorMessage={submitError}
+        submittedStudent={submittedStudent}
       />
     </section>
   );

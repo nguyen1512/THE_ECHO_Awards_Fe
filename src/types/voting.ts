@@ -9,7 +9,16 @@ export interface VotePick {
   award: AwardItem;
 }
 
-export interface VotePayload {
+export interface StudentInfo {
+  studentName: string;
+  studentCode: string;
+}
+
+export interface VoteFormValues extends StudentInfo {
+  message: string;
+}
+
+export interface VotePayload extends StudentInfo {
   role: RoleType;
   awardId: string;
   awardName: string;
