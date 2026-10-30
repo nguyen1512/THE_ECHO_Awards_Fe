@@ -15,7 +15,7 @@ export class GoogleSheetsService {
   private static getWebappUrl(): string {
     return (
       process.env.GOOGLE_SHEET_WEBAPP_URL ||
-      'https://script.google.com/macros/s/AKfycbyre9y2tQfIAeMOKLBdX5a5JLpUs8dFrVin7hk7i3ElDE2tJDKnLdnZAgU97mNqFxvmCg/exec'
+      'https://script.google.com/macros/s/AKfycbw_LvKs2TJS-YN3L21C7xnduovcRuqhab_66tJDEvihg0DGPRujaH2OyftLK7BNdOYRhA/exec'
     );
   }
 
