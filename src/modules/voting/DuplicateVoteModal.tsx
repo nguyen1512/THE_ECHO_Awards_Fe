@@ -116,3 +116,4 @@ export function DuplicateVoteModal({
     document.body
   );
 }
+
