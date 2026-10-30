@@ -12,7 +12,7 @@ interface RoleVotingBlockProps {
   awards: AwardItem[];
   currentAward: AwardItem;
   campus: CampusItem;
-  votedMap: Record<string, boolean>;
+  votedMap?: Record<string, boolean>;
   onSelectAward: (awardId: string) => void;
   onOpenVote: (name: string) => void;
 }
@@ -24,7 +24,7 @@ export function RoleVotingBlock({
   awards,
   currentAward,
   campus,
-  votedMap,
+  votedMap = {},
   onSelectAward,
   onOpenVote,
 }: RoleVotingBlockProps) {

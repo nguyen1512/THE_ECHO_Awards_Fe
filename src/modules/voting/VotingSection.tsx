@@ -5,6 +5,7 @@ import { useVoting } from './hooks/useVoting';
 import { CampusTabs } from './CampusTabs';
 import { RoleVotingBlock } from './RoleVotingBlock';
 import { VoteBottomSheet } from './VoteBottomSheet';
+import { DuplicateVoteModal } from './DuplicateVoteModal';
 import { AWARDS_DATA } from '@/constants/awards';
 
 export function VotingSection() {
@@ -14,18 +15,19 @@ export function VotingSection() {
     currentCampus,
     currentGvAward,
     currentCmAward,
-    votedMap,
     currentPick,
     isSheetOpen,
     isSubmitting,
     submitSuccess,
     submitError,
     submittedStudent,
+    duplicateModal,
     handleSelectCampus,
     handleSelectAward,
     handleOpenVote,
     handleCloseVote,
     handleSubmitVote,
+    handleCloseDuplicateModal,
   } = useVoting();
 
   return (
@@ -54,7 +56,7 @@ export function VotingSection() {
           onSelect={handleSelectCampus}
         />
 
-        {/* Block 1: Giáo viên */}
+        {/* Block 1: Giáo viên (Không giới hạn lần vote ở thẻ ứng viên) */}
         <RoleVotingBlock
           stepNumber={1}
           role="gv"
@@ -62,14 +64,13 @@ export function VotingSection() {
           awards={AWARDS_DATA.gv}
           currentAward={currentGvAward}
           campus={currentCampus}
-          votedMap={votedMap}
           onSelectAward={(awardId) => handleSelectAward('gv', awardId)}
           onOpenVote={(name) => handleOpenVote('gv', name)}
         />
 
         <div className="my-14 border-t border-[#2b47b0]" />
 
-        {/* Block 2: Class Manager */}
+        {/* Block 2: Class Manager (Không giới hạn lần vote ở thẻ ứng viên) */}
         <RoleVotingBlock
           stepNumber={2}
           role="cm"
@@ -77,7 +78,6 @@ export function VotingSection() {
           awards={AWARDS_DATA.cm}
           currentAward={currentCmAward}
           campus={currentCampus}
-          votedMap={votedMap}
           onSelectAward={(awardId) => handleSelectAward('cm', awardId)}
           onOpenVote={(name) => handleOpenVote('cm', name)}
         />
@@ -93,6 +93,14 @@ export function VotingSection() {
         successMessage={submitSuccess}
         errorMessage={submitError}
         submittedStudent={submittedStudent}
+      />
+
+      {/* Duplicate Vote Warning Popup */}
+      <DuplicateVoteModal
+        isOpen={duplicateModal.isOpen}
+        onClose={handleCloseDuplicateModal}
+        studentCode={duplicateModal.studentCode}
+        role={duplicateModal.role}
       />
     </section>
   );

@@ -76,21 +76,20 @@ function json_(obj) {
 }
 
 /**
- * Chống trùng: 1 mã học viên chỉ bình chọn 1 lần cho mỗi ứng viên ở mỗi giải
- * (cùng khóa role|awardId|campusId|nomineeName mà website đang dùng).
+ * Chống trùng: Mỗi học viên (mã học viên) chỉ được bình chọn tối đa 1 lần cho Giáo viên (gv)
+ * và 1 lần cho Class Manager (cm). Nếu đã bình chọn cho vai trò đó rồi thì từ chối.
  * Các dòng cũ chưa có mã học viên (cột J trống) được bỏ qua.
  */
 function isDuplicateVote_(sheet, data, studentCode) {
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return false;
   var rows = sheet.getRange(2, 1, lastRow - 1, VOTES_HEADERS.length).getValues();
+  var incomingRole = String(data.role || "").trim().toLowerCase();
   for (var i = 0; i < rows.length; i++) {
     var r = rows[i];
-    if (String(r[COL_STUDENT_CODE]).trim().toUpperCase() === studentCode &&
-        String(r[COL_ROLE]) === String(data.role) &&
-        String(r[COL_AWARD_ID]) === String(data.awardId) &&
-        String(r[COL_CAMPUS_ID]) === String(data.campusId) &&
-        String(r[COL_NOMINEE]) === String(data.nomineeName)) {
+    var existingCode = String(r[COL_STUDENT_CODE] || "").trim().toUpperCase();
+    var existingRole = String(r[COL_ROLE] || "").trim().toLowerCase();
+    if (existingCode && existingCode === studentCode && existingRole === incomingRole) {
       return true;
     }
   }
@@ -122,7 +121,7 @@ function doPost(e) {
           return json_({
             success: false,
             code: "DUPLICATE",
-            message: "Mã học viên đã bình chọn cho ứng viên này ở giải này"
+            message: "Học viên này đã bình chọn một người khác"
           });
         }
 

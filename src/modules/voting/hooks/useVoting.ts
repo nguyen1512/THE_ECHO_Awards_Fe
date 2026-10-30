@@ -7,34 +7,34 @@ import { CampusItem } from '@/types/campuses';
 import { AwardItem, RoleType } from '@/types/awards';
 import { VotePick, VotePayload, VoteFormValues, StudentInfo } from '@/types/voting';
 
+export interface DuplicateModalState {
+  isOpen: boolean;
+  studentCode: string;
+  role: RoleType;
+}
+
 export function useVoting() {
   const [selectedCampusId, setSelectedCampusId] = useState<string>('qt');
   const [selectedAwards, setSelectedAwards] = useState<{ gv: string; cm: string }>({
     gv: 'inspiring',
     cm: 'steady',
   });
-  const [votedMap, setVotedMap] = useState<Record<string, boolean>>({});
   const [currentPick, setCurrentPick] = useState<VotePick | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submittedStudent, setSubmittedStudent] = useState<StudentInfo | null>(null);
+  const [duplicateModal, setDuplicateModal] = useState<DuplicateModalState>({
+    isOpen: false,
+    studentCode: '',
+    role: 'gv',
+  });
   const submittingRef = useRef(false);
 
-  // Khôi phục URL search params và localStorage khi mount
+  // Khôi phục URL search params khi mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    // Load voted keys from localStorage
-    try {
-      const stored = localStorage.getItem('echo_voted_keys');
-      if (stored) {
-        setVotedMap(JSON.parse(stored));
-      }
-    } catch {
-      // Ignore
-    }
 
     // Load URL params
     const params = new URLSearchParams(window.location.search);
@@ -107,26 +107,39 @@ export function useVoting() {
     setCurrentPick(null);
   };
 
-  const markVoted = (vkey: string) => {
-    setVotedMap((prev) => {
-      const newMap = { ...prev, [vkey]: true };
-      try {
-        localStorage.setItem('echo_voted_keys', JSON.stringify(newMap));
-      } catch {
-        // Ignore
-      }
-      return newMap;
-    });
+  const handleCloseDuplicateModal = () => {
+    setDuplicateModal((prev) => ({ ...prev, isOpen: false }));
   };
 
   /** Trả về true nếu bình chọn đã được ghi nhận vào Google Sheet */
   const handleSubmitVote = async ({ message, studentName, studentCode }: VoteFormValues) => {
-    // Dùng ref để chặn bấm 2 lần trong cùng một nhịp render
     if (!currentPick || submittingRef.current) return false;
+
+    const normalizedCode = studentCode.trim().toUpperCase();
+
+    // 1. Kiểm tra nhanh ở client: học viên này đã vote cho vai trò này trên máy chưa?
+    try {
+      const stored = localStorage.getItem('echo_student_voted_roles');
+      if (stored) {
+        const studentVotedMap: Record<string, Partial<Record<RoleType, boolean>>> = JSON.parse(stored);
+        if (studentVotedMap[normalizedCode]?.[currentPick.role]) {
+          setDuplicateModal({
+            isOpen: true,
+            studentCode: normalizedCode,
+            role: currentPick.role,
+          });
+          setSubmitError('Học viên này đã bình chọn một người khác');
+          return false;
+        }
+      }
+    } catch {
+      // Ignore localStorage parse error
+    }
 
     submittingRef.current = true;
     setIsSubmitting(true);
     setSubmitError(null);
+
     const payload: VotePayload = {
       role: currentPick.role,
       awardId: currentPick.award.id,
@@ -136,7 +149,7 @@ export function useVoting() {
       nomineeName: currentPick.name,
       voterMessage: message,
       studentName,
-      studentCode,
+      studentCode: normalizedCode,
     };
 
     try {
@@ -148,9 +161,27 @@ export function useVoting() {
 
       const resData = await res.json().catch(() => null);
 
-      if (res.status === 409) {
-        // Mã học viên này đã bình chọn cho ứng viên này trước đó
-        markVoted(currentPick.vkey);
+      // Nếu học viên đã bình chọn cho vai trò này trước đó -> Hiện POPUP thông báo
+      if (res.status === 409 || resData?.code === 'DUPLICATE') {
+        try {
+          const stored = localStorage.getItem('echo_student_voted_roles');
+          const studentVotedMap: Record<string, Partial<Record<RoleType, boolean>>> = stored ? JSON.parse(stored) : {};
+          studentVotedMap[normalizedCode] = {
+            ...(studentVotedMap[normalizedCode] || {}),
+            [currentPick.role]: true,
+          };
+          localStorage.setItem('echo_student_voted_roles', JSON.stringify(studentVotedMap));
+        } catch {
+          // Ignore
+        }
+
+        setDuplicateModal({
+          isOpen: true,
+          studentCode: normalizedCode,
+          role: currentPick.role,
+        });
+        setSubmitError('Học viên này đã bình chọn một người khác');
+        return false;
       }
 
       if (!res.ok || !resData?.success) {
@@ -160,8 +191,20 @@ export function useVoting() {
         return false;
       }
 
-      markVoted(currentPick.vkey);
-      setSubmittedStudent({ studentName, studentCode });
+      // Lưu thành công vào danh sách vai trò đã vote của học viên
+      try {
+        const stored = localStorage.getItem('echo_student_voted_roles');
+        const studentVotedMap: Record<string, Partial<Record<RoleType, boolean>>> = stored ? JSON.parse(stored) : {};
+        studentVotedMap[normalizedCode] = {
+          ...(studentVotedMap[normalizedCode] || {}),
+          [currentPick.role]: true,
+        };
+        localStorage.setItem('echo_student_voted_roles', JSON.stringify(studentVotedMap));
+      } catch {
+        // Ignore
+      }
+
+      setSubmittedStudent({ studentName, studentCode: normalizedCode });
       setSubmitSuccess(
         `Cảm ơn bạn đã gửi một Echo! Bạn đã bình chọn cho ${currentPick.name} ở giải ${currentPick.award.name}. Dữ liệu đã được ghi nhận thành công.`
       );
@@ -183,17 +226,18 @@ export function useVoting() {
     selectedAwards,
     currentGvAward,
     currentCmAward,
-    votedMap,
     currentPick,
     isSheetOpen,
     isSubmitting,
     submitSuccess,
     submitError,
     submittedStudent,
+    duplicateModal,
     handleSelectCampus,
     handleSelectAward,
     handleOpenVote,
     handleCloseVote,
     handleSubmitVote,
+    handleCloseDuplicateModal,
   };
 }

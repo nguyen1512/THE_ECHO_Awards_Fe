@@ -38,7 +38,8 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          message: `Mã học viên ${vote.studentCode} đã bình chọn cho ${vote.nomineeName} ở giải ${vote.awardName} trước đó.`,
+          code: 'DUPLICATE',
+          message: 'Học viên này đã bình chọn một người khác',
         },
         { status: 409 }
       );

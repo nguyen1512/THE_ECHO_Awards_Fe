@@ -35,6 +35,18 @@ export class GoogleSheetsService {
 
     // Chỉ dùng in-memory khi chưa cấu hình Google Sheet (môi trường dev)
     if (!webappUrl) {
+      const incomingRole = String(vote.role).toLowerCase();
+      const incomingCode = String(vote.studentCode || '').trim().toUpperCase();
+      if (incomingCode) {
+        const alreadyVoted = memoryVotes.some(
+          (v) =>
+            String(v.studentCode || '').trim().toUpperCase() === incomingCode &&
+            String(v.role).toLowerCase() === incomingRole
+        );
+        if (alreadyVoted) {
+          return { status: 'duplicate' };
+        }
+      }
       memoryVotes.unshift(record);
       return { status: 'ok', mode: 'in-memory-fallback' };
     }

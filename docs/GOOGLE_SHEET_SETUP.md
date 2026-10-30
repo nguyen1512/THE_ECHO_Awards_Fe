@@ -19,7 +19,7 @@ Website gửi mỗi lượt bình chọn từ server (`POST /api/votes`) tới m
 
 Cột I, J nằm ở cuối nên dữ liệu A–H cũ không bị xê dịch. Các dòng cũ sẽ để trống I, J.
 
-**Chống trùng:** Apps Script từ chối (trả `code: "DUPLICATE"`) nếu cùng một mã học viên đã bình chọn cho cùng ứng viên, cùng giải, cùng cơ sở. Website hiển thị thông báo lỗi tương ứng.
+**Chống trùng:** Apps Script từ chối (trả `code: "DUPLICATE"`, thông báo "Học viên này đã bình chọn một người khác") nếu một mã học viên đã bình chọn cho vai trò đó trước đó (mỗi học viên chỉ được vote 1 lần cho Giáo viên và 1 lần cho Class Manager). Website sẽ hiển thị popup cảnh báo tương ứng.
 
 ## Lần đầu thiết lập (Sheet mới)
 
