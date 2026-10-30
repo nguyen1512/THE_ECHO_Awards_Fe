@@ -100,6 +100,7 @@ export function VotingSection() {
         isOpen={duplicateModal.isOpen}
         onClose={handleCloseDuplicateModal}
         studentCode={duplicateModal.studentCode}
+        studentPhone={duplicateModal.studentPhone}
         role={duplicateModal.role}
       />
     </section>

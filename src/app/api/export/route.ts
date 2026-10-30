@@ -47,6 +47,7 @@ export async function GET(request: Request) {
       'Lời nhắn kèm theo',
       'Tên học viên',
       'Mã số học viên',
+      'Số điện thoại',
     ];
 
     const rows = votes.map((v) => [
@@ -60,6 +61,7 @@ export async function GET(request: Request) {
       `"${(v.voterMessage || '').replace(/"/g, '""')}"`,
       `"${(v.studentName || '').replace(/"/g, '""')}"`,
       `"${(v.studentCode || '').replace(/"/g, '""')}"`,
+      `"${(v.studentPhone || '').replace(/"/g, '""')}"`,
     ]);
 
     const csvContent = BOM + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');

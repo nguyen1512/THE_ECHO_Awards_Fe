@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/Button';
 interface DuplicateVoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  studentCode: string;
+  studentCode?: string;
+  studentPhone?: string;
   role: 'gv' | 'cm';
 }
 
@@ -16,6 +17,7 @@ export function DuplicateVoteModal({
   isOpen,
   onClose,
   studentCode,
+  studentPhone,
   role,
 }: DuplicateVoteModalProps) {
   const [mounted, setMounted] = useState(false);
@@ -46,6 +48,12 @@ export function DuplicateVoteModal({
   if (!isOpen || !mounted) return null;
 
   const roleText = role === 'gv' ? 'Giáo viên' : 'Class Manager';
+  const identifiersText = [
+    studentCode ? `Mã: ${studentCode}` : '',
+    studentPhone ? `SĐT: ${studentPhone}` : '',
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -89,8 +97,9 @@ export function DuplicateVoteModal({
 
         {/* Description */}
         <p id="duplicate-vote-desc" className="text-sm text-[#a9b9e8] leading-relaxed">
-          Mã số học viên <b className="text-white font-mono tracking-wider">{studentCode}</b> đã
-          được ghi nhận bình chọn cho một <b>{roleText}</b> trước đó.
+          Học viên với thông tin{' '}
+          <b className="text-white font-mono tracking-wider">{identifiersText || 'này'}</b> đã được
+          ghi nhận bình chọn cho một <b>{roleText}</b> trước đó.
         </p>
 
         {/* Rule note */}
@@ -116,4 +125,3 @@ export function DuplicateVoteModal({
     document.body
   );
 }
-

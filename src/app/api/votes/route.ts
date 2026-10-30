@@ -4,8 +4,9 @@ import { VotePayload } from '@/types/voting';
 import {
   normalizeStudentName,
   normalizeStudentCode,
+  normalizeStudentPhone,
   validateStudentName,
-  validateStudentCode,
+  validateStudentIdentifiers,
 } from '@/utils/student';
 
 export async function POST(request: Request) {
@@ -21,15 +22,23 @@ export async function POST(request: Request) {
 
     const studentName = String(body.studentName ?? '');
     const studentCode = String(body.studentCode ?? '');
-    const studentError = validateStudentName(studentName) || validateStudentCode(studentCode);
-    if (studentError) {
-      return NextResponse.json({ success: false, message: studentError }, { status: 400 });
+    const studentPhone = String(body.studentPhone ?? '');
+
+    const nameError = validateStudentName(studentName);
+    if (nameError) {
+      return NextResponse.json({ success: false, message: nameError }, { status: 400 });
+    }
+
+    const identifierError = validateStudentIdentifiers(studentCode, studentPhone);
+    if (identifierError) {
+      return NextResponse.json({ success: false, message: identifierError }, { status: 400 });
     }
 
     const vote: VotePayload = {
       ...body,
       studentName: normalizeStudentName(studentName),
-      studentCode: normalizeStudentCode(studentCode),
+      studentCode: studentCode ? normalizeStudentCode(studentCode) : undefined,
+      studentPhone: studentPhone ? normalizeStudentPhone(studentPhone) : undefined,
     };
 
     const result = await GoogleSheetsService.appendVote(vote);

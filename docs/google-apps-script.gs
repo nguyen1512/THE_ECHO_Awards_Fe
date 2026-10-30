@@ -10,22 +10,17 @@
  *    - "EchoMessages"
  * 3. Tiêu đề hàng 1 tab "Votes" (tự tạo khi chạy hàm setupHeaders):
  *    [A: Thời gian (giờ VN) | B: Vai trò | C: Mã giải thưởng | D: Tên giải thưởng | E: Mã cơ sở | F: Tên cơ sở
- *     | G: Người được bình chọn | H: Lời nhắn | I: Tên học viên | J: Mã số học viên]
- *    Cột I, J được thêm vào CUỐI nên dữ liệu cũ (A–H) giữ nguyên vị trí.
+ *     | G: Người được bình chọn | H: Lời nhắn | I: Tên học viên | J: Mã số học viên | K: Số điện thoại]
+ *    Cột I, J, K được thêm vào CUỐI nên dữ liệu cũ (A–H) giữ nguyên vị trí 100%.
  * 4. Tiêu đề hàng 1 tab "EchoMessages" (tự tạo khi chạy hàm setupHeaders):
  *    [A: Thời gian | B: Người gửi | C: Vai trò người nhận | D: Mã cơ sở | E: Tên cơ sở | F: Người nhận | G: Lời nhắn | H: Trạng thái]
  *    >> Chạy hàm setupHeaders() một lần trong Apps Script để tự thêm tiêu đề tiếng Việt vào 2 tab.
  * 5. Trên menu Google Sheet, chọn: Tiện ích mở rộng (Extensions) > Apps Script
  * 6. Xóa toàn bộ mã cũ và dán toàn bộ đoạn mã bên dưới vào.
- * 7. Nhấn "Triển khai" (Deploy) > "Triển khai mới" (New deployment).
- *    - Chọn loại: Ứng dụng web (Web app).
- *    - Thực thi dưới dạng (Execute as): Tôi (Me).
- *    - Ai có quyền truy cập (Who has access): Bất kỳ ai (Anyone).
- * 8. Nhấn Triển khai và cấp quyền. Sao chép "URL ứng dụng web" (Web App URL).
- * 9. Dán URL vào file `.env.local` của website:
- *    GOOGLE_SHEET_WEBAPP_URL="https://script.google.com/macros/s/.../exec"
- *    (Khi sửa mã: Deploy > Manage deployments > Edit > Version: New version để giữ nguyên URL.)
- * Xem hướng dẫn chi tiết: docs/GOOGLE_SHEET_SETUP.md
+ * 7. Nhấn "Triển khai" (Deploy) > "Quản lý bản triển khai" (Manage deployments).
+ *    - Chọn bản triển khai hiện tại, bấm nút Chỉnh sửa (Edit - cây bút chì).
+ *    - Phiên bản: Phiên bản mới (New version).
+ *    - Bấm Triển khai (Deploy).
  * =========================================================================
  */
 
@@ -34,10 +29,10 @@ var TIMEZONE = "Asia/Ho_Chi_Minh";
 var VOTES_HEADERS = [
   "Thời gian", "Vai trò", "Mã giải thưởng", "Tên giải thưởng",
   "Mã cơ sở", "Tên cơ sở", "Người được bình chọn", "Lời nhắn",
-  "Tên học viên", "Mã số học viên"
+  "Tên học viên", "Mã số học viên", "Số điện thoại"
 ];
 // Vị trí cột (0-based) dùng cho kiểm tra trùng
-var COL_ROLE = 1, COL_AWARD_ID = 2, COL_CAMPUS_ID = 4, COL_NOMINEE = 6, COL_STUDENT_CODE = 9;
+var COL_ROLE = 1, COL_AWARD_ID = 2, COL_CAMPUS_ID = 4, COL_NOMINEE = 6, COL_STUDENT_CODE = 9, COL_STUDENT_PHONE = 10;
 var MESSAGES_HEADERS = [
   "Thời gian", "Người gửi", "Vai trò người nhận", "Mã cơ sở",
   "Tên cơ sở", "Người nhận", "Lời nhắn", "Trạng thái"
@@ -76,11 +71,11 @@ function json_(obj) {
 }
 
 /**
- * Chống trùng: Mỗi học viên (mã học viên) chỉ được bình chọn tối đa 1 lần cho Giáo viên (gv)
- * và 1 lần cho Class Manager (cm). Nếu đã bình chọn cho vai trò đó rồi thì từ chối.
- * Các dòng cũ chưa có mã học viên (cột J trống) được bỏ qua.
+ * Chống trùng: Mỗi học viên (xác định qua Mã học viên HOẶC Số điện thoại)
+ * chỉ được bình chọn tối đa 1 lần cho Giáo viên (gv) và 1 lần cho Class Manager (cm).
+ * Các dòng cũ chưa có mã học viên/SĐT được bỏ qua.
  */
-function isDuplicateVote_(sheet, data, studentCode) {
+function isDuplicateVote_(sheet, data, studentCode, studentPhone) {
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return false;
   var rows = sheet.getRange(2, 1, lastRow - 1, VOTES_HEADERS.length).getValues();
@@ -88,9 +83,16 @@ function isDuplicateVote_(sheet, data, studentCode) {
   for (var i = 0; i < rows.length; i++) {
     var r = rows[i];
     var existingCode = String(r[COL_STUDENT_CODE] || "").trim().toUpperCase();
+    var existingPhone = String(r[COL_STUDENT_PHONE] || "").trim();
     var existingRole = String(r[COL_ROLE] || "").trim().toLowerCase();
-    if (existingCode && existingCode === studentCode && existingRole === incomingRole) {
-      return true;
+
+    if (existingRole === incomingRole) {
+      if (studentCode && existingCode && existingCode === studentCode) {
+        return true;
+      }
+      if (studentPhone && existingPhone && existingPhone === studentPhone) {
+        return true;
+      }
     }
   }
   return false;
@@ -105,9 +107,14 @@ function doPost(e) {
 
     if (action === "appendVote") {
       var studentCode = String(data.studentCode || "").trim().toUpperCase();
+      var studentPhone = String(data.studentPhone || "").trim();
       var studentName = String(data.studentName || "").trim();
-      if (!studentCode || !studentName) {
-        return json_({ success: false, code: "INVALID", message: "Thiếu tên hoặc mã số học viên" });
+
+      if (!studentName) {
+        return json_({ success: false, code: "INVALID", message: "Vui lòng nhập họ và tên học viên" });
+      }
+      if (!studentCode && !studentPhone) {
+        return json_({ success: false, code: "INVALID", message: "Vui lòng nhập Mã số học viên hoặc Số điện thoại" });
       }
 
       // Khóa để 2 request đồng thời không cùng vượt qua bước kiểm tra trùng
@@ -117,7 +124,7 @@ function doPost(e) {
         var sheetVotes = ss.getSheetByName("Votes") || ss.insertSheet("Votes");
         ensureHeaders_(sheetVotes, VOTES_HEADERS);
 
-        if (isDuplicateVote_(sheetVotes, data, studentCode)) {
+        if (isDuplicateVote_(sheetVotes, data, studentCode, studentPhone)) {
           return json_({
             success: false,
             code: "DUPLICATE",
@@ -136,8 +143,8 @@ function doPost(e) {
           data.nomineeName,
           data.voterMessage,
           studentName,
-          // Ghi dạng chuỗi để Sheet không tự đổi mã số (VD: 00123) thành số
-          "'" + studentCode
+          studentCode ? "'" + studentCode : "",
+          studentPhone ? "'" + studentPhone : ""
         ]);
       } finally {
         lock.releaseLock();

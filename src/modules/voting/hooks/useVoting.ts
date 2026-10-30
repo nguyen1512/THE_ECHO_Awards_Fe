@@ -6,10 +6,12 @@ import { AWARDS_DATA } from '@/constants/awards';
 import { CampusItem } from '@/types/campuses';
 import { AwardItem, RoleType } from '@/types/awards';
 import { VotePick, VotePayload, VoteFormValues, StudentInfo } from '@/types/voting';
+import { normalizeStudentCode, normalizeStudentPhone } from '@/utils/student';
 
 export interface DuplicateModalState {
   isOpen: boolean;
-  studentCode: string;
+  studentCode?: string;
+  studentPhone?: string;
   role: RoleType;
 }
 
@@ -28,6 +30,7 @@ export function useVoting() {
   const [duplicateModal, setDuplicateModal] = useState<DuplicateModalState>({
     isOpen: false,
     studentCode: '',
+    studentPhone: '',
     role: 'gv',
   });
   const submittingRef = useRef(false);
@@ -112,20 +115,30 @@ export function useVoting() {
   };
 
   /** Trả về true nếu bình chọn đã được ghi nhận vào Google Sheet */
-  const handleSubmitVote = async ({ message, studentName, studentCode }: VoteFormValues) => {
+  const handleSubmitVote = async ({
+    message,
+    studentName,
+    studentCode,
+    studentPhone,
+  }: VoteFormValues) => {
     if (!currentPick || submittingRef.current) return false;
 
-    const normalizedCode = studentCode.trim().toUpperCase();
+    const normalizedCode = normalizeStudentCode(studentCode || '');
+    const normalizedPhone = normalizeStudentPhone(studentPhone || '');
 
-    // 1. Kiểm tra nhanh ở client: học viên này đã vote cho vai trò này trên máy chưa?
+    // 1. Kiểm tra nhanh ở client: mã học viên hoặc SĐT này đã vote cho vai trò này trên máy chưa?
     try {
       const stored = localStorage.getItem('echo_student_voted_roles');
       if (stored) {
         const studentVotedMap: Record<string, Partial<Record<RoleType, boolean>>> = JSON.parse(stored);
-        if (studentVotedMap[normalizedCode]?.[currentPick.role]) {
+        const hasVotedByCode = normalizedCode && studentVotedMap[normalizedCode]?.[currentPick.role];
+        const hasVotedByPhone = normalizedPhone && studentVotedMap[normalizedPhone]?.[currentPick.role];
+
+        if (hasVotedByCode || hasVotedByPhone) {
           setDuplicateModal({
             isOpen: true,
             studentCode: normalizedCode,
+            studentPhone: normalizedPhone,
             role: currentPick.role,
           });
           setSubmitError('Học viên này đã bình chọn một người khác');
@@ -149,7 +162,8 @@ export function useVoting() {
       nomineeName: currentPick.name,
       voterMessage: message,
       studentName,
-      studentCode: normalizedCode,
+      studentCode: normalizedCode || undefined,
+      studentPhone: normalizedPhone || undefined,
     };
 
     try {
@@ -166,10 +180,18 @@ export function useVoting() {
         try {
           const stored = localStorage.getItem('echo_student_voted_roles');
           const studentVotedMap: Record<string, Partial<Record<RoleType, boolean>>> = stored ? JSON.parse(stored) : {};
-          studentVotedMap[normalizedCode] = {
-            ...(studentVotedMap[normalizedCode] || {}),
-            [currentPick.role]: true,
-          };
+          if (normalizedCode) {
+            studentVotedMap[normalizedCode] = {
+              ...(studentVotedMap[normalizedCode] || {}),
+              [currentPick.role]: true,
+            };
+          }
+          if (normalizedPhone) {
+            studentVotedMap[normalizedPhone] = {
+              ...(studentVotedMap[normalizedPhone] || {}),
+              [currentPick.role]: true,
+            };
+          }
           localStorage.setItem('echo_student_voted_roles', JSON.stringify(studentVotedMap));
         } catch {
           // Ignore
@@ -178,6 +200,7 @@ export function useVoting() {
         setDuplicateModal({
           isOpen: true,
           studentCode: normalizedCode,
+          studentPhone: normalizedPhone,
           role: currentPick.role,
         });
         setSubmitError('Học viên này đã bình chọn một người khác');
@@ -195,16 +218,28 @@ export function useVoting() {
       try {
         const stored = localStorage.getItem('echo_student_voted_roles');
         const studentVotedMap: Record<string, Partial<Record<RoleType, boolean>>> = stored ? JSON.parse(stored) : {};
-        studentVotedMap[normalizedCode] = {
-          ...(studentVotedMap[normalizedCode] || {}),
-          [currentPick.role]: true,
-        };
+        if (normalizedCode) {
+          studentVotedMap[normalizedCode] = {
+            ...(studentVotedMap[normalizedCode] || {}),
+            [currentPick.role]: true,
+          };
+        }
+        if (normalizedPhone) {
+          studentVotedMap[normalizedPhone] = {
+            ...(studentVotedMap[normalizedPhone] || {}),
+            [currentPick.role]: true,
+          };
+        }
         localStorage.setItem('echo_student_voted_roles', JSON.stringify(studentVotedMap));
       } catch {
         // Ignore
       }
 
-      setSubmittedStudent({ studentName, studentCode: normalizedCode });
+      setSubmittedStudent({
+        studentName,
+        studentCode: normalizedCode || undefined,
+        studentPhone: normalizedPhone || undefined,
+      });
       setSubmitSuccess(
         `Cảm ơn bạn đã gửi một Echo! Bạn đã bình chọn cho ${currentPick.name} ở giải ${currentPick.award.name}. Dữ liệu đã được ghi nhận thành công.`
       );

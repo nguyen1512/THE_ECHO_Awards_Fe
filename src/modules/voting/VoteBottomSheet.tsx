@@ -34,9 +34,10 @@ export function VoteBottomSheet({
   const { resetTouched } = student;
   const nameInputRef = useRef<HTMLInputElement>(null);
   const codeInputRef = useRef<HTMLInputElement>(null);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
-  // Reset message khi mở sheet mới (giữ nguyên tên + mã học viên đã nhập)
+  // Reset message khi mở sheet mới (giữ nguyên tên + mã / sđt học viên đã nhập)
   useEffect(() => {
     if (isOpen) {
       setMessage('');
@@ -71,7 +72,13 @@ export function VoteBottomSheet({
     // Đưa con trỏ tới ô lỗi đầu tiên
     const invalidField = student.validateAll();
     if (invalidField === 'studentName') return nameInputRef.current?.focus();
-    if (invalidField === 'studentCode') return codeInputRef.current?.focus();
+    if (invalidField === 'studentCode') {
+      if (!student.studentCode.trim() && !student.studentPhone.trim()) {
+        return codeInputRef.current?.focus();
+      }
+      return codeInputRef.current?.focus();
+    }
+    if (invalidField === 'studentPhone') return phoneInputRef.current?.focus();
     if (!isMessageValid) return messageRef.current?.focus();
 
     const info = student.getStudentInfo();
@@ -108,8 +115,18 @@ export function VoteBottomSheet({
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs md:text-sm py-2.5 px-3 rounded-lg bg-[#02081f] border border-[#2b47b0]">
               <dt className="text-[#a9b9e8]">Học viên:</dt>
               <dd className="text-white font-semibold break-words min-w-0">{submittedStudent.studentName}</dd>
-              <dt className="text-[#a9b9e8]">Mã số:</dt>
-              <dd className="text-white font-semibold tracking-wider break-all min-w-0">{submittedStudent.studentCode}</dd>
+              {submittedStudent.studentCode && (
+                <>
+                  <dt className="text-[#a9b9e8]">Mã số:</dt>
+                  <dd className="text-white font-semibold tracking-wider break-all min-w-0">{submittedStudent.studentCode}</dd>
+                </>
+              )}
+              {submittedStudent.studentPhone && (
+                <>
+                  <dt className="text-[#a9b9e8]">Số điện thoại:</dt>
+                  <dd className="text-white font-semibold tracking-wider break-all min-w-0">{submittedStudent.studentPhone}</dd>
+                </>
+              )}
             </dl>
           )}
           <div className="pt-2">
@@ -123,13 +140,18 @@ export function VoteBottomSheet({
           <StudentInfoFields
             studentName={student.studentName}
             studentCode={student.studentCode}
+            studentPhone={student.studentPhone}
             nameError={student.nameError}
             codeError={student.codeError}
+            phoneError={student.phoneError}
+            identifierError={student.identifierError}
             onNameChange={student.handleNameChange}
             onCodeChange={student.handleCodeChange}
+            onPhoneChange={student.handlePhoneChange}
             onBlur={student.handleBlur}
             nameInputRef={nameInputRef}
             codeInputRef={codeInputRef}
+            phoneInputRef={phoneInputRef}
             disabled={isSubmitting}
           />
 

@@ -11,7 +11,8 @@ export interface VotePick {
 
 export interface StudentInfo {
   studentName: string;
-  studentCode: string;
+  studentCode?: string;
+  studentPhone?: string;
 }
 
 export interface VoteFormValues extends StudentInfo {

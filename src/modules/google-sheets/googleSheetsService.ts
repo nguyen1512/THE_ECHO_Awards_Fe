@@ -37,12 +37,15 @@ export class GoogleSheetsService {
     if (!webappUrl) {
       const incomingRole = String(vote.role).toLowerCase();
       const incomingCode = String(vote.studentCode || '').trim().toUpperCase();
-      if (incomingCode) {
-        const alreadyVoted = memoryVotes.some(
-          (v) =>
-            String(v.studentCode || '').trim().toUpperCase() === incomingCode &&
-            String(v.role).toLowerCase() === incomingRole
-        );
+      const incomingPhone = String(vote.studentPhone || '').trim();
+
+      if (incomingCode || incomingPhone) {
+        const alreadyVoted = memoryVotes.some((v) => {
+          const sameRole = String(v.role).toLowerCase() === incomingRole;
+          const sameCode = incomingCode && String(v.studentCode || '').trim().toUpperCase() === incomingCode;
+          const samePhone = incomingPhone && String(v.studentPhone || '').trim() === incomingPhone;
+          return sameRole && (sameCode || samePhone);
+        });
         if (alreadyVoted) {
           return { status: 'duplicate' };
         }
@@ -66,7 +69,8 @@ export class GoogleSheetsService {
           nomineeName: vote.nomineeName,
           voterMessage: vote.voterMessage,
           studentName: vote.studentName,
-          studentCode: vote.studentCode,
+          studentCode: vote.studentCode || '',
+          studentPhone: vote.studentPhone || '',
         },
       }),
       signal: AbortSignal.timeout(20000),
