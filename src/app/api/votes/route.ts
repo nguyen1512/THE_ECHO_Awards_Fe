@@ -1,19 +1,48 @@
 import { NextResponse } from 'next/server';
 import { GoogleSheetsService } from '@/modules/google-sheets/googleSheetsService';
 import { VotePayload } from '@/types/voting';
+import {
+  normalizeStudentName,
+  normalizeStudentCode,
+  validateStudentName,
+  validateStudentCode,
+} from '@/utils/student';
 
 export async function POST(request: Request) {
   try {
-    const body: VotePayload = await request.json();
+    const body: VotePayload | null = await request.json().catch(() => null);
 
-    if (!body.role || !body.awardId || !body.campusId || !body.nomineeName) {
+    if (!body || !body.role || !body.awardId || !body.campusId || !body.nomineeName) {
       return NextResponse.json(
         { success: false, message: 'Dữ liệu bình chọn không đầy đủ' },
         { status: 400 }
       );
     }
 
-    const result = await GoogleSheetsService.appendVote(body);
+    const studentName = String(body.studentName ?? '');
+    const studentCode = String(body.studentCode ?? '');
+    const studentError = validateStudentName(studentName) || validateStudentCode(studentCode);
+    if (studentError) {
+      return NextResponse.json({ success: false, message: studentError }, { status: 400 });
+    }
+
+    const vote: VotePayload = {
+      ...body,
+      studentName: normalizeStudentName(studentName),
+      studentCode: normalizeStudentCode(studentCode),
+    };
+
+    const result = await GoogleSheetsService.appendVote(vote);
+
+    if (result.status === 'duplicate') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Mã học viên ${vote.studentCode} đã bình chọn cho ${vote.nomineeName} ở giải ${vote.awardName} trước đó.`,
+        },
+        { status: 409 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -23,8 +52,8 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error in /api/votes POST:', error);
     return NextResponse.json(
-      { success: false, message: 'Lỗi máy chủ khi ghi nhận bình chọn' },
-      { status: 500 }
+      { success: false, message: 'Chưa ghi nhận được bình chọn do lỗi kết nối Google Sheet. Vui lòng thử lại sau ít phút.' },
+      { status: 502 }
     );
   }
 }

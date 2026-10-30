@@ -45,6 +45,8 @@ export async function GET(request: Request) {
       'Tên cơ sở',
       'Người được bình chọn',
       'Lời nhắn kèm theo',
+      'Tên học viên',
+      'Mã số học viên',
     ];
 
     const rows = votes.map((v) => [
@@ -56,6 +58,8 @@ export async function GET(request: Request) {
       `"${(v.campusName || '').replace(/"/g, '""')}"`,
       `"${(v.nomineeName || '').replace(/"/g, '""')}"`,
       `"${(v.voterMessage || '').replace(/"/g, '""')}"`,
+      `"${(v.studentName || '').replace(/"/g, '""')}"`,
+      `"${(v.studentCode || '').replace(/"/g, '""')}"`,
     ]);
 
     const csvContent = BOM + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
