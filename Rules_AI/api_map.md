@@ -11,7 +11,7 @@
 ### Cấu trúc Google Sheets Schema
 
 #### 1. Sheet Tab: `Votes`
-- Cột A: `Timestamp` (Thời gian bình chọn, ví dụ `2026-10-29T10:15:00Z`)
+- Cột A: `Timestamp` (Thời gian bình chọn theo giờ VN, ví dụ `2026-10-29 17:15:00`; các dòng cũ dạng ISO `2026-10-29T10:15:00Z`)
 - Cột B: `Role` (`gv` hoặc `cm`)
 - Cột C: `AwardId` (`inspiring`, `guiding`, `energy`, `rising`, `lasting`, `steady`, `connecting`, `caring`)
 - Cột D: `AwardName` (Ví dụ `Inspiring Echo`)
@@ -19,6 +19,8 @@
 - Cột F: `CampusName` (`Quang Trung`, `Phùng Khoang`,...)
 - Cột G: `NomineeName` (Tên giáo viên hoặc CM)
 - Cột H: `VoterMessage` (Lời nhắn kèm theo từ 1 đến 3 câu)
+- Cột I: `StudentName` (Tên học viên bình chọn)
+- Cột J: `StudentCode` (Mã số học viên, viết hoa — dùng làm khóa chống trùng)
 
 #### 2. Sheet Tab: `EchoMessages`
 - Cột A: `Timestamp` (Thời gian gửi)

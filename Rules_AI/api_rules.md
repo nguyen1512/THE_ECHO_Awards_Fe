@@ -17,10 +17,13 @@ Hệ thống The Echo Awards sử dụng Next.js Route Handlers kết nối tr�
     "campusId": "qt",
     "campusName": "Quang Trung",
     "nomineeName": "Nguyễn Thị Mỹ Hạnh",
-    "voterMessage": "Cô luôn là nguồn cảm hứng lớn..."
+    "voterMessage": "Cô luôn là nguồn cảm hứng lớn...",
+    "studentName": "Nguyễn Văn An",
+    "studentCode": "HV12345"
   }
   ```
-- **Xử lý:** Lưu thông tin vào Tab `Votes` của Google Sheet kèm `timestamp` (ISO string).
+- **Xử lý:** Validate `studentName`/`studentCode` (400 nếu sai), lưu vào Tab `Votes` của Google Sheet kèm `timestamp` (ISO string, Apps Script đổi sang giờ VN).
+- **Response:** `200` thành công · `400` dữ liệu sai · `409` mã học viên đã bình chọn cho ứng viên này · `502` không ghi được Google Sheet.
 
 ### B. `GET /api/echo-messages`
 - **Chức năng:** Lấy danh sách các tin nhắn tri ân để hiển thị trên Echo Wall.
